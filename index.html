@@ -9,49 +9,229 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    body { background: linear-gradient(135deg, #0e2240 0%, #1a3a5c 60%, #1a5c8c 100%); }
-    #login-page { background: transparent; }
-    .login-card { animation: fadeUp 0.4s ease; }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-    .pin-dots { display:flex; gap:10px; justify-content:center; margin:16px 0 20px; }
-    .pin-dot { width:14px; height:14px; border-radius:50%; border:2px solid #c5d3e0; background:transparent; transition:all 0.2s; }
-    .pin-dot.filled { background:#1a3a5c; border-color:#1a3a5c; }
-    .pin-pad { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-width:220px; margin:0 auto; }
-    .pin-key { height:50px; border-radius:10px; border:1.5px solid #dce4ee; background:#f8fafd; font-size:18px; font-weight:700; color:#1a3a5c; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
-    .pin-key:hover { background:#e8f0fb; border-color:#1a3a5c; }
-    .pin-key:active { transform:scale(0.93); }
-    .pin-key.clear { font-size:13px; font-weight:600; color:#c0392b; background:#fce8e6; border-color:#f1948a; }
-    .pin-key.del { font-size:20px; color:#4a6480; }
-    .divider { display:flex; align-items:center; gap:10px; margin:16px 0; color:#aaa; font-size:12px; }
-    .divider::before, .divider::after { content:''; flex:1; height:1px; background:#eee; }
-    .bg-decor { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
-    .bg-decor span { position:absolute; border-radius:50%; background:rgba(200,164,74,0.06); }
-    .year-badge { display:inline-block; background:#f0f5ff; color:#1a3a5c; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:14px; letter-spacing:0.5px; }
+    :root {
+      --primary-navy: #0e2240;
+      --mid-navy: #1a3a5c;
+      --light-navy: #2355a0;
+      --mulia-gold: #c8a44a;
+      --text-dark: #1e293b;
+    }
+
+    body { 
+      background: linear-gradient(135deg, var(--primary-navy) 0%, var(--mid-navy) 60%, #11294a 100%); 
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    #login-page { 
+      width: 100%;
+      max-width: 400px;
+      z-index: 1;
+    }
+
+    .login-card { 
+      background: rgba(255, 255, 255, 0.98);
+      padding: 32px 24px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+    }
+
+    @keyframes fadeUp { 
+      from { opacity: 0; transform: translateY(30px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+
+    .login-logo h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--mid-navy);
+      margin: 12px 0 2px 0;
+    }
+
+    .login-logo p {
+      font-size: 13px;
+      color: #64748b;
+      margin: 0 0 12px 0;
+      font-weight: 500;
+    }
+
+    .year-badge { 
+      display: inline-block; 
+      background: #f0f5ff; 
+      color: var(--mid-navy); 
+      font-size: 11px; 
+      font-weight: 700; 
+      padding: 4px 12px; 
+      border-radius: 20px; 
+      margin-bottom: 20px; 
+      letter-spacing: 0.5px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .pin-dots { display: flex; gap: 12px; justify-content: center; margin: 16px 0 24px; }
+    
+    .pin-dot { 
+      width: 14px; 
+      height: 14px; 
+      border-radius: 50%; 
+      border: 2px solid #cbd5e1; 
+      background: transparent; 
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
+    }
+    
+    .pin-dot.filled { 
+      background: var(--mulia-gold); 
+      border-color: var(--mulia-gold); 
+      transform: scale(1.15);
+      box-shadow: 0 0 8px rgba(200, 164, 74, 0.4);
+    }
+
+    .pin-pad { 
+      display: grid; 
+      grid-template-columns: repeat(3, 1fr); 
+      gap: 12px; 
+      max-width: 260px; 
+      margin: 0 auto 20px; 
+    }
+
+    .pin-key { 
+      height: 54px; 
+      border-radius: 12px; 
+      border: 1px solid #e2e8f0; 
+      background: #f8fafc; 
+      font-size: 20px; 
+      font-weight: 700; 
+      color: var(--mid-navy); 
+      cursor: pointer; 
+      transition: all 0.15s ease; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      outline: none;
+    }
+    
+    .pin-key:hover { 
+      background: #f1f5f9; 
+      border-color: var(--mid-navy); 
+    }
+    
+    .pin-key:active { 
+      transform: scale(0.92); 
+      background: #e2e8f0;
+    }
+
+    .pin-key.clear { 
+      font-size: 13px; 
+      font-weight: 600; 
+      color: #df473c; 
+      background: #fef2f2; 
+      border-color: #fee2e2; 
+    }
+    .pin-key.clear:hover { background: #fee2e2; border-color: #ef4444; }
+
+    .pin-key.del { 
+      font-size: 22px; 
+      color: #64748b; 
+    }
+    .pin-key.del:hover { border-color: #64748b; color: var(--mid-navy); }
+
+    .divider { 
+      display: flex; 
+      align-items: center; 
+      gap: 12px; 
+      margin: 20px 0; 
+      color: #94a3b8; 
+      font-size: 12px; 
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+    .form-control-container { position: relative; }
+    
+    #pin-input.form-control {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      transition: all 0.2s;
+      color: var(--mid-navy);
+      font-weight: 700;
+    }
+    #pin-input.form-control:focus {
+      border-color: var(--mid-navy);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.15);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--mid-navy) 0%, var(--light-navy) 100%);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.95; }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .alert-danger {
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      color: #b91c1c;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .bg-decor { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bg-decor span { position: absolute; border-radius: 50%; background: rgba(200, 164, 74, 0.05); }
   </style>
 </head>
 <body>
 <div class="bg-decor">
-  <span style="width:500px;height:500px;top:-200px;right:-150px;"></span>
-  <span style="width:300px;height:300px;bottom:-100px;left:-80px;background:rgba(255,255,255,0.03);"></span>
+  <span style="width:600px; height:600px; top:-250px; right:-150px; filter: blur(40px);"></span>
+  <span style="width:400px; height:400px; bottom:-150px; left:-100px; background:rgba(255,255,255,0.02); filter: blur(20px);"></span>
 </div>
 
 <div id="login-page">
-  <div class="login-card" style="position:relative;z-index:1;">
-    <div class="login-logo">
-      <div style="width:64px;height:64px;background:linear-gradient(135deg,#1a3a5c,#2355a0);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto;">
-        <i class="ti ti-building-skyscraper" style="font-size:32px;color:#c8a44a;" aria-hidden="true"></i>
+  <div class="login-card">
+    <div class="login-logo" style="text-align: center;">
+      <div style="width:64px; height:64px; background:linear-gradient(135deg, #1a3a5c, #2355a0); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto; box-shadow: 0 8px 16px rgba(26,58,92,0.25);">
+        <i class="ti ti-building-skyscraper" style="font-size:32px; color:var(--mulia-gold);" aria-hidden="true"></i>
       </div>
-      <h2 style="margin-top:12px;">Mulia Group</h2>
+      <h2>Mulia Group</h2>
       <p>Mulia Properties Development Sdn Bhd</p>
       <div class="year-badge">Sistem Pengurusan OT</div>
     </div>
 
     <div id="login-error" class="alert alert-danger" style="display:none;">
-      <i class="ti ti-circle-x" aria-hidden="true"></i>
+      <i class="ti ti-circle-x" style="font-size: 16px;" aria-hidden="true"></i>
       <span id="login-error-msg">PIN tidak sah. Sila cuba lagi.</span>
     </div>
 
-    <p style="font-size:12.5px;color:#888;text-align:center;margin-bottom:4px;">Masukkan PIN Admin</p>
+    <p style="font-size:13px; color:#64748b; text-align:center; margin-bottom:4px; font-weight: 500;">Masukkan PIN Admin</p>
     <div class="pin-dots" id="pin-dots">
       <div class="pin-dot" id="dot-0"></div>
       <div class="pin-dot" id="dot-1"></div>
@@ -78,15 +258,17 @@
 
     <div class="divider">atau</div>
 
-    <div style="display:flex;flex-direction:column;gap:8px;">
-      <input type="password" id="pin-input" class="form-control" placeholder="Taip PIN di sini..." maxlength="4" style="text-align:center;letter-spacing:8px;font-size:20px;" oninput="syncPinInput(this.value)" onkeydown="if(event.key==='Enter')submitPin()">
-      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitPin()">
-        <i class="ti ti-login" aria-hidden="true"></i> Log Masuk
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div class="form-control-container">
+        <input type="password" id="pin-input" class="form-control" placeholder="Taip PIN di sini..." maxlength="4" style="text-align:center; letter-spacing:8px; font-size:20px;" oninput="syncPinInput(this.value)" onkeydown="if(event.key==='Enter')submitPin()">
+      </div>
+      <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="submitPin()">
+        <i class="ti ti-login" style="font-size: 18px;" aria-hidden="true"></i> Log Masuk
       </button>
     </div>
 
-    <p style="text-align:center;font-size:11px;color:#bbb;margin-top:20px;">
-      <i class="ti ti-lock" style="font-size:13px;" aria-hidden="true"></i>
+    <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:24px; display:flex; align-items:center; justify-content:center; gap:4px;">
+      <i class="ti ti-lock" style="font-size:14px; color:var(--mulia-gold);" aria-hidden="true"></i>
       Sistem dalaman — akses terhad
     </p>
   </div>
@@ -143,11 +325,10 @@ function submitPin() {
     const card = document.querySelector('.login-card');
     card.style.animation = 'none';
     card.offsetHeight;
-    card.style.animation = 'shake 0.4s ease';
+    card.style.animation = 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both';
   }
 }
 
-// Check kalau dah login
 window.addEventListener('load', () => {
   const s = JSON.parse(localStorage.getItem(CONFIG.SESSION_KEY) || '{}');
   if (s.loggedIn && Date.now() < s.expires) {
@@ -163,7 +344,10 @@ document.addEventListener('keydown', e => {
 </script>
 <style>
 @keyframes shake {
-  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 </style>
 </body>
