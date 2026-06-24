@@ -14,62 +14,170 @@
 <div id="app">
   <main class="main" id="main-content">
 
-    <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+    <div class="page-header">
+
       <div>
-        <h2 style="font-size:22px;font-weight:800;">OT Command Center</h2>
-        <p id="today-date" style="color:var(--muted);font-size:13px;"></p>
+
+      <h2>
+      <i class="ti ti-dashboard"></i>
+      OT Command Center
+      </h2>
+
+      <p id="today-date"></p>
+
+      <div class="system-status">
+      <span class="online-dot"></span>
+      System Online
+      <span class="sync-text">
+      | Last Sync: Automatic
+      </span>
       </div>
 
-      <div class="page-actions no-print" style="display:flex;gap:10px;">
-        <button class="btn btn-outline btn-sm" onclick="refreshDashboard()">
-          <i class="ti ti-refresh"></i> Refresh
-        </button>
-        <a href="submit_ot.html" class="btn btn-primary btn-sm">
-          <i class="ti ti-plus"></i> New OT Request
-        </a>
+
       </div>
-    </div>
+
+
+      <div class="page-actions no-print">
+
+      <button class="btn btn-outline btn-sm"
+      onclick="refreshDashboard()">
+
+      <i class="ti ti-refresh"></i>
+      Refresh
+
+      </button>
+
+
+      <a href="submit_ot.html"
+      class="btn btn-primary btn-sm">
+
+      <i class="ti ti-plus"></i>
+      New OT Request
+
+      </a>
+
+
+      </div>
+
+
+      </div>
 
     <!-- Stat Cards -->
     <div class="stat-grid">
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="ti ti-users"></i></div>
-        <div>
-          <div class="stat-label">Active Workers</div>
-          <div class="stat-value" id="stat-workers">—</div>
-          <div style="font-size:11px;color:var(--success)">▲ Live system</div>
-        </div>
+      <div class="stat-card blue">
+
+      <div class="stat-icon">
+      <i class="ti ti-users"></i>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="ti ti-clock"></i></div>
-        <div>
-          <div class="stat-label">OT Hours (MTD)</div>
-          <div class="stat-value" id="stat-ot-hours">—</div>
-          <div style="font-size:11px;color:var(--accent)">Monthly total</div>
-        </div>
+
+      <div>
+
+      <div class="stat-label">
+      Active Workers
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="ti ti-circle-check"></i></div>
-        <div>
-          <div class="stat-label">Approved</div>
-          <div class="stat-value" id="stat-approved">—</div>
-          <div style="font-size:11px;color:var(--success)">This month</div>
-        </div>
+      <div class="stat-value"
+      id="stat-workers">
+      —
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon"><i class="ti ti-clock-pause"></i></div>
-        <div>
-          <div class="stat-label">Pending Review</div>
-          <div class="stat-value" id="stat-pending">—</div>
-          <div style="font-size:11px;color:var(--danger)">Action needed</div>
-        </div>
+      <div class="stat-sub">
+      Live workforce
       </div>
 
-    </div>
+      </div>
+
+      </div>
+
+
+
+      <div class="stat-card gold">
+
+      <div class="stat-icon">
+      <i class="ti ti-clock"></i>
+      </div>
+
+
+      <div>
+
+      <div class="stat-label">
+      OT Hours MTD
+      </div>
+
+      <div class="stat-value"
+      id="stat-ot-hours">
+      —
+      </div>
+
+      <div class="stat-sub">
+      Monthly workload
+      </div>
+
+
+      </div>
+
+      </div>
+
+
+
+      <div class="stat-card green">
+
+      <div class="stat-icon">
+      <i class="ti ti-currency-ringgit"></i>
+      </div>
+
+
+      <div>
+
+      <div class="stat-label">
+      Estimated OT Cost
+      </div>
+
+      <div class="stat-value">
+      RM 18,450
+      </div>
+
+      <div class="stat-sub">
+      Current month
+      </div>
+
+
+      </div>
+
+      </div>
+
+
+
+      <div class="stat-card green">
+
+      <div class="stat-icon">
+      <i class="ti ti-chart-line"></i>
+      </div>
+
+
+      <div>
+
+      <div class="stat-label">
+      Approval Rate
+      </div>
+
+      <div class="stat-value">
+      92%
+      </div>
+
+      <div class="stat-sub">
+      Excellent performance
+      </div>
+
+
+      </div>
+
+      </div>
+
+
+      </div>
 
     <!-- Charts Row -->
     <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
@@ -215,8 +323,29 @@ function renderRecentTable(records) {
   tbody.innerHTML = records.slice(0, 8).map(r => `
     <tr>
       <td>
-        <div style="font-weight:600;font-size:13.5px;">${r.name}</div>
-        <div style="font-size:11.5px;color:var(--text-muted);">${r.department}</div>
+              <div class="worker-cell">
+
+      <div class="worker-avatar">
+      ${r.name.charAt(0)}
+      </div>
+
+
+      <div>
+
+      <div class="worker-name">
+      ${r.name}
+      </div>
+
+
+      <div class="worker-dept">
+      ${r.department}
+      </div>
+
+
+      </div>
+
+
+      </div>
       </td>
       <td>${Utils.formatDate(r.otDate)}</td>
       <td><strong>${r.hours}</strong> jam</td>
