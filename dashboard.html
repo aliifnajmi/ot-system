@@ -1,464 +1,310 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — Sistem OT Mulia Group</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMS Command Center - Mulia OT System</title>
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
 <div id="app">
-  <main class="main" id="main-content">
 
-    <div class="page-header">
-
-      <div>
-
-      <h2>
-      <i class="ti ti-dashboard"></i>
-      OT Command Center
-      </h2>
-
-      <p id="today-date"></p>
-
-      <div class="system-status">
-      <span class="online-dot"></span>
-      System Online
-      <span class="sync-text">
-      | Last Sync: Automatic
-      </span>
-      </div>
-
-
-      </div>
-
-
-      <div class="page-actions no-print">
-
-      <button class="btn btn-outline btn-sm"
-      onclick="refreshDashboard()">
-
-      <i class="ti ti-refresh"></i>
-      Refresh
-
-      </button>
-
-
-      <a href="submit_ot.html"
-      class="btn btn-primary btn-sm">
-
-      <i class="ti ti-plus"></i>
-      New OT Request
-
-      </a>
-
-
-      </div>
-
-
-      </div>
-
-    <!-- Stat Cards -->
-    <div class="stat-grid">
-
-      <div class="stat-card blue">
-
-      <div class="stat-icon">
-      <i class="ti ti-users"></i>
-      </div>
-
-
-      <div>
-
-      <div class="stat-label">
-      Active Workers
-      </div>
-
-      <div class="stat-value"
-      id="stat-workers">
-      —
-      </div>
-
-      <div class="stat-sub">
-      Live workforce
-      </div>
-
-      </div>
-
-      </div>
-
-
-
-      <div class="stat-card gold">
-
-      <div class="stat-icon">
-      <i class="ti ti-clock"></i>
-      </div>
-
-
-      <div>
-
-      <div class="stat-label">
-      OT Hours MTD
-      </div>
-
-      <div class="stat-value"
-      id="stat-ot-hours">
-      —
-      </div>
-
-      <div class="stat-sub">
-      Monthly workload
-      </div>
-
-
-      </div>
-
-      </div>
-
-
-
-      <div class="stat-card green">
-
-      <div class="stat-icon">
-      <i class="ti ti-currency-ringgit"></i>
-      </div>
-
-
-      <div>
-
-      <div class="stat-label">
-      Estimated OT Cost
-      </div>
-
-      <div class="stat-value">
-      RM 18,450
-      </div>
-
-      <div class="stat-sub">
-      Current month
-      </div>
-
-
-      </div>
-
-      </div>
-
-
-
-      <div class="stat-card green">
-
-      <div class="stat-icon">
-      <i class="ti ti-chart-line"></i>
-      </div>
-
-
-      <div>
-
-      <div class="stat-label">
-      Approval Rate
-      </div>
-
-      <div class="stat-value">
-      92%
-      </div>
-
-      <div class="stat-sub">
-      Excellent performance
-      </div>
-
-
-      </div>
-
-      </div>
-
-
-      </div>
-
-    <!-- Charts Row -->
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px;">
-
-      <div class="card">
-        <div class="card-header">
-          <h3>OT Analytics Overview</h3>
-          <span id="chart-month" style="color:var(--muted);font-size:12px;"></span>
-        </div>
-        <div class="card-body" style="padding:16px;">
-          <canvas id="trend-chart" height="240"></canvas>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3>Department Load</h3>
-        </div>
-        <div class="card-body">
-          <canvas id="dept-chart" height="240"></canvas>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- OT By Type Summary -->
-    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:20px;">
-      <div class="card">
-        <div class="card-header"><h3>Jenis OT Bulan Ini</h3></div>
-        <div class="card-body" style="padding:16px;">
-          <canvas id="type-chart" height="200" aria-label="Carta jenis OT"></canvas>
-        </div>
-      </div>
-
-      <!-- Recent OT Submissions -->
-      <div class="card">
-        <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
-          <div>
-            <h3>Permohonan OT Terbaru</h3>
-            <div style="font-size:12px;color:var(--muted);margin-top:2px;">
-              Senarai 10 rekod terkini yang dihantar
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div style="width: 40px; height: 40px; background: var(--mulia-green); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--mulia-navy-dark); font-weight: bold; font-size: 20px;">
+                M
             </div>
-          </div>
+            <div class="sidebar-logo-text">
+                <h1>Mulia Group</h1>
+                <span>OT System</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Main Menu</div>
+            <a href="dashboard.html" class="nav-item active"><i class="fas fa-home"></i> Dashboard</a>
+            <a href="workers.html" class="nav-item"><i class="fas fa-users"></i> Direktori Pekerja</a>
+            <a href="manage_ot.html" class="nav-item"><i class="fas fa-tasks"></i> Urus OT</a>
+        </nav>
+    </aside>
 
-          <a href="ot_records.html" class="btn btn-outline btn-sm">
-            Lihat semua
-          </a>
+    <header class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-title">Dashboard Enterprise</div>
+        </div>
+        <div class="topbar-right">
+            <div class="user-avatar">A</div>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <div class="page-header">
+            <div>
+                <h2>BMS Command Center 👋</h2>
+                <p><i class="fas fa-map-marker-alt" style="color: var(--danger); margin-right: 5px;"></i> Exchange 106 · Mulia Property Development</p>
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <a href="workers.html" class="btn btn-outline">
+                    <i class="fas fa-users"></i> Direktori Pekerja
+                </a>
+                <a href="manage_ot.html" class="btn btn-primary">
+                    <i class="fas fa-tasks"></i> Urus OT
+                    <span style="background: var(--mulia-navy-dark); color: var(--mulia-green); border-radius: 20px; padding: 2px 8px; font-size: 11px; margin-left: 5px;">12</span>
+                </a>
+            </div>
         </div>
 
-        <div class="table-wrap" style="padding:0 16px 16px 16px;">
-          
-          <!-- TABLE -->
-          <div style="overflow-x:auto;border-radius:12px;">
-            <table class="modern-table">
-              <thead>
-                <tr>
-                  <th>Pekerja</th>
-                  <th>Tarikh OT</th>
-                  <th>Jam</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-
-              <tbody id="recent-table"></tbody>
-            </table>
-          </div>
-
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-hard-hat"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Workers</div>
+                    <div class="stat-value">217</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--warning); background: var(--warning-bg);"><i class="fas fa-hourglass-half"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label">Pending OT</div>
+                    <div class="stat-value" style="color: var(--warning);">12</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="color: var(--success); background: var(--success-bg);"><i class="fas fa-check-double"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label">Approved OT</div>
+                    <div class="stat-value" style="color: var(--success);">145</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-business-time"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Hours</div>
+                    <div class="stat-value">1,024.5h</div>
+                </div>
+            </div>
         </div>
-      </div>
 
-    <!-- Quick Actions -->
-    <div class="card no-print">
-      <div class="card-header"><h3>Tindakan Pantas</h3></div>
-      <div class="card-body">
-        <div style="display:flex;flex-wrap:wrap;gap:10px;">
-          <a href="submit_ot.html" class="btn btn-primary">
-            <i class="ti ti-clock-plus" aria-hidden="true"></i> Hantar OT
-          </a>
-          <a href="workers.html?action=add" class="btn btn-outline">
-            <i class="ti ti-user-plus" aria-hidden="true"></i> Tambah Pekerja
-          </a>
-          <a href="verify.html" class="btn btn-outline">
-            <i class="ti ti-checks" aria-hidden="true"></i> Lulus OT Tertunggak
-          </a>
-          <a href="report.html" class="btn btn-outline">
-            <i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Jana Laporan
-          </a>
-          <button class="btn btn-outline" onclick="window.print()">
-            <i class="ti ti-printer" aria-hidden="true"></i> Cetak Dashboard
-          </button>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 24px;">
+            
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-header" style="display: flex; justify-content: space-between; border-bottom: none;">
+                    <span><i class="fas fa-chart-bar me-2"></i> Trend OT Bulanan</span>
+                    <div style="font-size: 12px; color: var(--text-muted); display: flex; gap: 12px;">
+                        <span><span style="display:inline-block; width:10px; height:10px; background:var(--mulia-navy-light); border-radius:2px; margin-right:5px;"></span>Dihantar</span>
+                        <span><span style="display:inline-block; width:10px; height:10px; background:var(--mulia-green); border-radius:2px; margin-right:5px;"></span>Diluluskan</span>
+                    </div>
+                </div>
+                <div style="height: 250px; padding-top: 10px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 0;">
+                <div class="card-header"><i class="fas fa-chart-pie me-2"></i> Taburan Status OT</div>
+                <div style="display: flex; align-items: center; justify-content: center; height: 250px; gap: 30px;">
+                    <div style="position: relative; width: 150px; height: 150px;">
+                        <canvas id="donutChart"></canvas>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                            <div style="font-size: 24px; font-weight: 800; color: var(--text-main);">165</div>
+                            <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Total</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px; width: 140px;">
+                        <div style="display: flex; justify-content: space-between; background: var(--success-bg); padding: 8px 12px; border-radius: 6px;">
+                            <span style="color: var(--success); font-size: 13px; font-weight: 600;">Approved</span>
+                            <span style="color: var(--success); font-weight: 800;">145</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; background: var(--warning-bg); padding: 8px 12px; border-radius: 6px;">
+                            <span style="color: var(--warning); font-size: 13px; font-weight: 600;">Pending</span>
+                            <span style="color: var(--warning); font-weight: 800;">12</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; background: var(--danger-bg); padding: 8px 12px; border-radius: 6px;">
+                            <span style="color: var(--danger); font-size: 13px; font-weight: 600;">Rejected</span>
+                            <span style="color: var(--danger); font-weight: 800;">8</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
 
-  </main>
+        <div class="card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fas fa-list-alt me-2"></i> Penyerahan OT Terkini</span>
+                <a href="manage_ot.html" style="font-size: 13px; color: var(--mulia-green); font-weight: 600;">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="table-wrap">
+                <table class="modern-table">
+                    <thead>
+                        <tr>
+                            <th>Pekerja</th>
+                            <th>Syarikat / Trade</th>
+                            <th>Tarikh & Masa</th>
+                            <th>Jumlah Jam</th>
+                            <th>Status</th>
+                            <th style="text-align: center;">Dokumen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 6px; background: var(--mulia-navy-light); color: var(--mulia-green); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
+                                        AH
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #fff;">Ahmad Hafiz</div>
+                                        <div style="font-size: 12px; color: var(--text-muted);">EMP-1002</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 500;">Mulia Property</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">BMS Technician</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 500;">24 Jun 2026</div>
+                                <div style="font-size: 12px; color: var(--text-muted);"><i class="fas fa-clock"></i> 18:00 – 22:00</div>
+                            </td>
+                            <td><span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-weight: 600;">4.0h</span></td>
+                            <td><span class="badge pending">Pending</span></td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-outline" style="padding: 6px 10px;"><i class="fas fa-file-pdf"></i></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 6px; background: var(--mulia-navy-light); color: var(--mulia-green); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
+                                        SK
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #fff;">Siva Kumar</div>
+                                        <div style="font-size: 12px; color: var(--text-muted);">EMP-1045</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 500;">TechForce Sdn Bhd</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Chargeman</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 500;">23 Jun 2026</div>
+                                <div style="font-size: 12px; color: var(--text-muted);"><i class="fas fa-clock"></i> 20:00 – 00:00</div>
+                            </td>
+                            <td><span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-weight: 600;">4.0h</span></td>
+                            <td><span class="badge approved">Approved</span></td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-outline" style="padding: 6px 10px;"><i class="fas fa-file-pdf"></i></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 6px; background: var(--mulia-navy-light); color: var(--mulia-green); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
+                                        LW
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #fff;">Lee Wei Han</div>
+                                        <div style="font-size: 12px; color: var(--text-muted);">EMP-2031</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 500;">Mulia Property</div>
+                                <div style="font-size: 12px; color: var(--text-muted);">Plumber</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 500;">22 Jun 2026</div>
+                                <div style="font-size: 12px; color: var(--text-muted);"><i class="fas fa-clock"></i> 17:30 – 19:30</div>
+                            </td>
+                            <td><span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-weight: 600;">2.0h</span></td>
+                            <td><span class="badge rejected">Rejected</span></td>
+                            <td style="text-align: center;">
+                                <button class="btn btn-outline" style="padding: 6px 10px;"><i class="fas fa-file-pdf"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
 </div>
 
-<div id="toast-container" aria-live="polite"></div>
-
-<script src="config/config.js"></script>
-<script src="assets/js/layout.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
-buildLayout('dashboard', 'Dashboard');
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = "#94a3b8"; // Text muted color
 
-// Set date
-document.getElementById('today-date').textContent =
-  'Hari ini: ' + new Date().toLocaleDateString('ms-MY', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
-document.getElementById('chart-month').textContent = Utils.getMonthName(new Date().getMonth()+1, new Date().getFullYear());
+    // Bar Chart — Monthly Trend (Mock Data)
+    new Chart(document.getElementById('trendChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [
+                { 
+                    label: 'Total Dihantar', 
+                    data: [120, 150, 180, 140, 160, 165], 
+                    backgroundColor: '#1a3a5c', // mulia-navy-light
+                    borderRadius: 4
+                },
+                { 
+                    label: 'Total Diluluskan', 
+                    data: [110, 145, 170, 130, 155, 145], 
+                    backgroundColor: '#7ee081', // mulia-green
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(255,255,255,0.05)' }, 
+                    border: { display: false } 
+                },
+                x: { 
+                    grid: { display: false }, 
+                    border: { display: false } 
+                }
+            }
+        }
+    });
 
-let deptChart, trendChart, typeChart;
-
-async function refreshDashboard() {
-  Utils.showLoading();
-  try {
-    const data = await API.get('getDashboard');
-    renderStats(data.stats);
-    renderRecentTable(data.recent);
-    renderCharts(data);
-  } catch(e) {
-    // Demo mode — guna data sampel
-    renderStats({ workers: 32, otHours: 247, approved: 18, pending: 5 });
-    renderRecentTable(getSampleRecords());
-    renderCharts(getSampleChartData());
-    Utils.toast('Demo mode: data sampel dipaparkan', 'info');
-  } finally {
-    Utils.hideLoading();
-  }
-}
-
-function renderStats(s) {
-  document.getElementById('stat-workers').textContent = s.workers || 0;
-  document.getElementById('stat-ot-hours').textContent = (s.otHours || 0) + ' jam';
-  document.getElementById('stat-approved').textContent = s.approved || 0;
-  document.getElementById('stat-pending').textContent = s.pending || 0;
-}
-
-function renderRecentTable(records) {
-  const tbody = document.getElementById('recent-table');
-  if (!records || !records.length) {
-    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state" style="padding:24px;"><i class="ti ti-inbox" aria-hidden="true"></i><p>Tiada rekod ditemui</p></div></td></tr>';
-    return;
-  }
-  tbody.innerHTML = records.slice(0, 8).map(r => `
-    <tr>
-      <td>
-              <div class="worker-cell">
-
-      <div class="worker-avatar">
-      ${r.name.charAt(0)}
-      </div>
-
-
-      <div>
-
-      <div class="worker-name">
-      ${r.name}
-      </div>
-
-
-      <div class="worker-dept">
-      ${r.department}
-      </div>
-
-
-      </div>
-
-
-      </div>
-      </td>
-      <td>${Utils.formatDate(r.otDate)}</td>
-      <td><strong>${r.hours}</strong> jam</td>
-      <td>${Utils.badgeHTML(r.status)}</td>
-    </tr>
-  `).join('');
-}
-
-function renderCharts(data) {
-  const isDark = document.body.classList.contains('dark');
-  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
-  const textColor = isDark ? '#8dafc8' : '#4a6480';
-  Chart.defaults.color = textColor;
-
-  // Dept chart
-  const deptCtx = document.getElementById('dept-chart').getContext('2d');
-  if (deptChart) deptChart.destroy();
-  deptChart = new Chart(deptCtx, {
-    type: 'bar',
-    data: {
-      labels: data.deptLabels || [],
-      datasets: [{
-        label: 'Jam OT',
-        data: data.deptData || [],
-        backgroundColor: 'rgba(26,58,92,0.75)',
-        borderColor: '#1a3a5c',
-        borderWidth: 1,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { font: { size: 11 } } },
-        y: { grid: { color: gridColor }, beginAtZero: true, ticks: { font: { size: 11 } } }
-      }
-    }
-  });
-
-  // Trend chart
-  const trendCtx = document.getElementById('trend-chart').getContext('2d');
-  if (trendChart) trendChart.destroy();
-  trendChart = new Chart(trendCtx, {
-    type: 'line',
-    data: {
-      labels: data.trendLabels || [],
-      datasets: [{
-        label: 'Jam OT',
-        data: data.trendData || [],
-        borderColor: '#c8a44a',
-        backgroundColor: 'rgba(200,164,74,0.12)',
-        tension: 0.4, fill: true,
-        pointBackgroundColor: '#c8a44a',
-        pointRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { font: { size: 11 } } },
-        y: { grid: { color: gridColor }, beginAtZero: true, ticks: { font: { size: 11 } } }
-      }
-    }
-  });
-
-  // Type chart
-  const typeCtx = document.getElementById('type-chart').getContext('2d');
-  if (typeChart) typeChart.destroy();
-  typeChart = new Chart(typeCtx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Hari Bekerja', 'Hujung Minggu', 'Cuti Umum'],
-      datasets: [{
-        data: data.typeData || [60, 30, 10],
-        backgroundColor: ['#1a3a5c', '#c8a44a', '#2355a0'],
-        borderWidth: 2,
-        borderColor: isDark ? '#162233' : '#fff',
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '65%',
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 14 } } }
-    }
-  });
-}
-
-function getSampleRecords() {
-  return [
-    { name:'Ahmad Fadzil', department:'Operasi', otDate:'2025-06-20', hours:3, status:'approved' },
-    { name:'Siti Aminah', department:'Jualan', otDate:'2025-06-19', hours:2, status:'pending' },
-    { name:'Raj Kumar', department:'Projek', otDate:'2025-06-18', hours:4, status:'approved' },
-    { name:'Noraini Binti Ali', department:'Kewangan', otDate:'2025-06-17', hours:2.5, status:'pending' },
-    { name:'Hazwan Hafiz', department:'IT', otDate:'2025-06-16', hours:3.5, status:'rejected' },
-    { name:'Farah Diana', department:'Pengurusan', otDate:'2025-06-15', hours:2, status:'approved' },
-  ];
-}
-
-function getSampleChartData() {
-  return {
-    deptLabels: ['Pengurusan','Jualan','Kewangan','Operasi','Projek','IT'],
-    deptData: [24, 48, 18, 72, 63, 22],
-    trendLabels: ['Jan','Feb','Mac','Apr','Mei','Jun'],
-    trendData: [180, 210, 165, 240, 195, 247],
-    typeData: [62, 28, 10],
-  };
-}
-
-window.addEventListener('load', refreshDashboard);
+    // Donut Chart — Status Distribution (Mock Data)
+    new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Approved', 'Pending', 'Rejected'],
+            datasets: [{
+                data: [145, 12, 8],
+                backgroundColor: ['#2ecc71', '#ffc107', '#ff5c75'], // Success, Warning, Danger
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            cutout: '75%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
 </script>
-<style>
-@media(max-width:768px){ .charts-grid{grid-template-columns:1fr!important;} }
-</style>
+
 </body>
 </html>
