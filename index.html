@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Log Masuk — Sistem OT Mulia Group</title>
+  <title>Portal Utama — Sistem OT Mulia Group</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
@@ -29,20 +29,21 @@
       box-sizing: border-box;
     }
 
-    #login-page { 
+    #welcome-page { 
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       z-index: 1;
     }
 
-    .login-card { 
+    .welcome-card { 
       background: rgba(255, 255, 255, 0.98);
-      padding: 32px 24px;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px);
+      padding: 40px 32px;
+      border-radius: 24px;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.2);
-      animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+      animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+      text-align: center;
     }
 
     @keyframes fadeUp { 
@@ -50,305 +51,152 @@
       to { opacity: 1; transform: translateY(0); } 
     }
 
-    .login-logo h2 {
-      font-size: 24px;
-      font-weight: 800;
-      color: var(--mid-navy);
-      margin: 12px 0 2px 0;
+    .logo-container {
+      width: 76px; 
+      height: 76px; 
+      background: linear-gradient(135deg, var(--mid-navy), var(--light-navy)); 
+      border-radius: 20px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin: 0 auto 20px auto; 
+      box-shadow: 0 10px 20px rgba(26,58,92,0.25);
     }
 
-    .login-logo p {
-      font-size: 13px;
+    .welcome-card h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--mid-navy);
+      margin: 0 0 4px 0;
+      letter-spacing: -0.5px;
+    }
+
+    .welcome-card p.subtitle {
+      font-size: 14px;
       color: #64748b;
-      margin: 0 0 12px 0;
+      margin: 0 0 24px 0;
       font-weight: 500;
     }
 
     .year-badge { 
       display: inline-block; 
-      background: #f0f5ff; 
-      color: var(--mid-navy); 
-      font-size: 11px; 
+      background: #f8fafc; 
+      color: var(--mulia-gold); 
+      font-size: 12px; 
       font-weight: 700; 
-      padding: 4px 12px; 
+      padding: 6px 16px; 
       border-radius: 20px; 
-      margin-bottom: 20px; 
+      margin-bottom: 32px; 
       letter-spacing: 0.5px;
       border: 1px solid #e2e8f0;
-    }
-
-    .pin-dots { display: flex; gap: 12px; justify-content: center; margin: 16px 0 24px; }
-    
-    .pin-dot { 
-      width: 14px; 
-      height: 14px; 
-      border-radius: 50%; 
-      border: 2px solid #cbd5e1; 
-      background: transparent; 
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); 
-    }
-    
-    .pin-dot.filled { 
-      background: var(--mulia-gold); 
-      border-color: var(--mulia-gold); 
-      transform: scale(1.15);
-      box-shadow: 0 0 8px rgba(200, 164, 74, 0.4);
-    }
-
-    .pin-pad { 
-      display: grid; 
-      grid-template-columns: repeat(3, 1fr); 
-      gap: 12px; 
-      max-width: 260px; 
-      margin: 0 auto 20px; 
-    }
-
-    .pin-key { 
-      height: 54px; 
-      border-radius: 12px; 
-      border: 1px solid #e2e8f0; 
-      background: #f8fafc; 
-      font-size: 20px; 
-      font-weight: 700; 
-      color: var(--mid-navy); 
-      cursor: pointer; 
-      transition: all 0.15s ease; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      outline: none;
-    }
-    
-    .pin-key:hover { 
-      background: #f1f5f9; 
-      border-color: var(--mid-navy); 
-    }
-    
-    .pin-key:active { 
-      transform: scale(0.92); 
-      background: #e2e8f0;
-    }
-
-    .pin-key.clear { 
-      font-size: 13px; 
-      font-weight: 600; 
-      color: #df473c; 
-      background: #fef2f2; 
-      border-color: #fee2e2; 
-    }
-    .pin-key.clear:hover { background: #fee2e2; border-color: #ef4444; }
-
-    .pin-key.del { 
-      font-size: 22px; 
-      color: #64748b; 
-    }
-    .pin-key.del:hover { border-color: #64748b; color: var(--mid-navy); }
-
-    .divider { 
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      margin: 20px 0; 
-      color: #94a3b8; 
-      font-size: 12px; 
       text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 600;
-    }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
-
-    .form-control-container { position: relative; }
-    
-    #pin-input.form-control {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 10px;
-      transition: all 0.2s;
-      color: var(--mid-navy);
-      font-weight: 700;
-    }
-    #pin-input.form-control:focus {
-      border-color: var(--mid-navy);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.15);
     }
 
-    .btn-primary {
+    .btn-enter {
       background: linear-gradient(135deg, var(--mid-navy) 0%, var(--light-navy) 100%);
       color: #fff;
       border: none;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 16px 24px;
+      border-radius: 14px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
-      transition: opacity 0.2s, transform 0.1s;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 16px rgba(26, 58, 92, 0.2);
     }
-    .btn-primary:hover { opacity: 0.95; }
-    .btn-primary:active { transform: scale(0.98); }
+    
+    .btn-enter i {
+      transition: transform 0.3s ease;
+    }
 
-    .alert-danger {
-      background: #fef2f2;
-      border: 1px solid #fee2e2;
-      color: #b91c1c;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 500;
+    .btn-enter:hover { 
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px rgba(26, 58, 92, 0.3);
+    }
+    
+    .btn-enter:hover i {
+      transform: translateX(4px);
+    }
+
+    .btn-enter:active { 
+      transform: translateY(1px); 
+      box-shadow: 0 4px 8px rgba(26, 58, 92, 0.2);
     }
 
     .bg-decor { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
     .bg-decor span { position: absolute; border-radius: 50%; background: rgba(200, 164, 74, 0.05); }
+    
+    .footer-text {
+      font-size: 12px; 
+      color: #94a3b8; 
+      margin-top: 24px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 6px;
+    }
   </style>
 </head>
 <body>
+
 <div class="bg-decor">
   <span style="width:600px; height:600px; top:-250px; right:-150px; filter: blur(40px);"></span>
   <span style="width:400px; height:400px; bottom:-150px; left:-100px; background:rgba(255,255,255,0.02); filter: blur(20px);"></span>
 </div>
 
-<div id="login-page">
-  <div class="login-card">
-    <div class="login-logo" style="text-align: center;">
-      <div style="width:64px; height:64px; background:linear-gradient(135deg, #1a3a5c, #2355a0); border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto; box-shadow: 0 8px 16px rgba(26,58,92,0.25);">
-        <i class="ti ti-building-skyscraper" style="font-size:32px; color:var(--mulia-gold);" aria-hidden="true"></i>
-      </div>
-      <h2>Mulia Group</h2>
-      <p>Mulia Properties Development Sdn Bhd</p>
-      <div class="year-badge">Sistem Pengurusan OT</div>
+<div id="welcome-page">
+  <div class="welcome-card">
+    <div class="logo-container">
+      <i class="ti ti-building-skyscraper" style="font-size:36px; color:var(--mulia-gold);" aria-hidden="true"></i>
     </div>
+    
+    <h2>Mulia Group</h2>
+    <p class="subtitle">Mulia Properties Development Sdn Bhd</p>
+    
+    <div class="year-badge">Sistem Pengurusan OT</div>
 
-    <div id="login-error" class="alert alert-danger" style="display:none;">
-      <i class="ti ti-circle-x" style="font-size: 16px;" aria-hidden="true"></i>
-      <span id="login-error-msg">PIN tidak sah. Sila cuba lagi.</span>
+    <button class="btn-enter" onclick="proceedToDashboard()">
+      Terus ke Dashboard <i class="ti ti-arrow-right" style="font-size: 20px;" aria-hidden="true"></i>
+    </button>
+
+    <div class="footer-text">
+      <i class="ti ti-shield-check" style="font-size:16px; color:var(--mulia-gold);" aria-hidden="true"></i>
+      Akses terus diaktifkan
     </div>
-
-    <p style="font-size:13px; color:#64748b; text-align:center; margin-bottom:4px; font-weight: 500;">Masukkan PIN Admin</p>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="dot-0"></div>
-      <div class="pin-dot" id="dot-1"></div>
-      <div class="pin-dot" id="dot-2"></div>
-      <div class="pin-dot" id="dot-3"></div>
-    </div>
-
-    <div class="pin-pad" role="group" aria-label="Pad PIN">
-      <button class="pin-key" onclick="addPin('1')">1</button>
-      <button class="pin-key" onclick="addPin('2')">2</button>
-      <button class="pin-key" onclick="addPin('3')">3</button>
-      <button class="pin-key" onclick="addPin('4')">4</button>
-      <button class="pin-key" onclick="addPin('5')">5</button>
-      <button class="pin-key" onclick="addPin('6')">6</button>
-      <button class="pin-key" onclick="addPin('7')">7</button>
-      <button class="pin-key" onclick="addPin('8')">8</button>
-      <button class="pin-key" onclick="addPin('9')">9</button>
-      <button class="pin-key clear" onclick="clearPin()">Padam</button>
-      <button class="pin-key" onclick="addPin('0')">0</button>
-      <button class="pin-key del" onclick="deletePin()" aria-label="Padam satu digit">
-        <i class="ti ti-backspace" aria-hidden="true"></i>
-      </button>
-    </div>
-
-    <div class="divider">atau</div>
-
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <div class="form-control-container">
-        <input type="password" id="pin-input" class="form-control" placeholder="Taip PIN di sini..." maxlength="4" style="text-align:center; letter-spacing:8px; font-size:20px;" oninput="syncPinInput(this.value)" onkeydown="if(event.key==='Enter')submitPin()">
-      </div>
-      <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="submitPin()">
-        <i class="ti ti-login" style="font-size: 18px;" aria-hidden="true"></i> Log Masuk
-      </button>
-    </div>
-
-    <p style="text-align:center; font-size:12px; color:#94a3b8; margin-top:24px; display:flex; align-items:center; justify-content:center; gap:4px;">
-      <i class="ti ti-lock" style="font-size:14px; color:var(--mulia-gold);" aria-hidden="true"></i>
-      Sistem dalaman — akses terhad
-    </p>
   </div>
 </div>
 
-<div id="toast-container" aria-live="polite"></div>
-
 <script src="config/config.js"></script>
 <script>
-let pin = '';
+  // Fungsi untuk terus ke dashboard tanpa PIN
+  function proceedToDashboard() {
+    // 1. Simulasikan sesi login yang sah supaya dashboard.html tidak menolak akses
+    const sessionKey = (typeof CONFIG !== 'undefined' && CONFIG.SESSION_KEY) ? CONFIG.SESSION_KEY : 'mulia_ot_session';
+    const sessionData = {
+      loggedIn: true,
+      role: 'admin',
+      expires: Date.now() + (2 * 60 * 60 * 1000) // Sesi 2 jam
+    };
+    localStorage.setItem(sessionKey, JSON.stringify(sessionData));
 
-function updateDots() {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById('dot-' + i).classList.toggle('filled', i < pin.length);
-  }
-}
-
-function addPin(d) {
-  if (pin.length >= 4) return;
-  pin += d;
-  updateDots();
-  if (pin.length === 4) setTimeout(submitPin, 200);
-}
-
-function deletePin() {
-  pin = pin.slice(0, -1);
-  updateDots();
-  document.getElementById('pin-input').value = pin;
-}
-
-function clearPin() {
-  pin = '';
-  updateDots();
-  document.getElementById('pin-input').value = '';
-  document.getElementById('login-error').style.display = 'none';
-}
-
-function syncPinInput(val) {
-  pin = val.slice(0, 4);
-  updateDots();
-}
-
-function submitPin() {
-  if (pin.length < 4) { Utils.toast('Sila masukkan 4 digit PIN', 'warning'); return; }
-  if (Auth.login(pin)) {
-    Utils.toast('Log masuk berjaya! Selamat datang, Admin.', 'success');
-    setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
-  } else {
-    document.getElementById('login-error').style.display = 'flex';
-    document.getElementById('login-error-msg').textContent = 'PIN tidak sah. Sila cuba lagi.';
-    pin = '';
-    updateDots();
-    document.getElementById('pin-input').value = '';
-    const card = document.querySelector('.login-card');
-    card.style.animation = 'none';
-    card.offsetHeight;
-    card.style.animation = 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both';
-  }
-}
-
-window.addEventListener('load', () => {
-  const s = JSON.parse(localStorage.getItem(CONFIG.SESSION_KEY) || '{}');
-  if (s.loggedIn && Date.now() < s.expires) {
+    // 2. Redirect ke dashboard
     window.location.href = 'dashboard.html';
   }
-});
 
-document.addEventListener('keydown', e => {
-  if (e.key >= '0' && e.key <= '9') addPin(e.key);
-  if (e.key === 'Backspace') deletePin();
-  if (e.key === 'Enter') submitPin();
-});
+  // Jika pengguna sudah ada sesi yang sah sebelum ini, terus bawa ke dashboard bila buka index.html
+  window.addEventListener('load', () => {
+    const sessionKey = (typeof CONFIG !== 'undefined' && CONFIG.SESSION_KEY) ? CONFIG.SESSION_KEY : 'mulia_ot_session';
+    const s = JSON.parse(localStorage.getItem(sessionKey) || '{}');
+    if (s.loggedIn && Date.now() < s.expires) {
+      window.location.href = 'dashboard.html';
+    }
+  });
 </script>
-<style>
-@keyframes shake {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
-}
-</style>
+
 </body>
 </html>
