@@ -8,10 +8,10 @@ const CONFIG = {
   // 1. Buka Google Sheets anda
   // 2. Extensions > Apps Script > Deploy > Web App
   // 3. Salin URL deployment ke sini
-  SCRIPT_URL: 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec',
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwm068KOgx8wt-VrjKtnhHEeWvk7Hq2F25L5LtgoSPQ6ztcmleMqdWVRhH8OhwGtFWs/exec',
 
   // ID Spreadsheet Google Sheets (dari URL)
-  SHEET_ID: 'YOUR_GOOGLE_SHEET_ID',
+  SHEET_ID: 'AKfycbwm068KOgx8wt-VrjKtnhHEeWvk7Hq2F25L5LtgoSPQ6ztcmleMqdWVRhH8OhwGtFWs',
 
   // ── SYARIKAT ──────────────────────────────
   COMPANY_NAME: 'Mulia Properties Development Sdn Bhd',
