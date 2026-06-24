@@ -30,7 +30,7 @@ const CONFIG = {
 
   // ── AUTH ───────────────────────────────────
   // Tukar PIN ini sebelum guna di production
-  ADMIN_PIN: '1234',
+  ADMIN_PIN: '1233',
   SESSION_KEY: 'mulia_ot_session',
   SESSION_DURATION: 8 * 60 * 60 * 1000, // 8 jam
 
