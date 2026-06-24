@@ -4,39 +4,89 @@
    ============================================ */
 
 :root {
-  --primary: #1a3a5c;
-  --primary-light: #2355a0;
-  --primary-dark: #0e2240;
+  --bg: #0b1220;
+  --card: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.08);
+  --text: #eaf1ff;
+  --muted: #93a4c7;
+  --primary: #4f8cff;
   --accent: #c8a44a;
-  --accent-light: #e8c46a;
-  --danger: #c0392b;
-  --success: #1a7a45;
-  --warning: #d68910;
-  --info: #1a6a9a;
-  --bg: #f4f6f9;
-  --bg-card: #ffffff;
-  --text-primary: #1c2b3a;
-  --text-secondary: #4a6480;
-  --text-muted: #8097ad;
-  --border: #dce4ee;
-  --sidebar-w: 240px;
-  --topbar-h: 60px;
-  --shadow-sm: 0 1px 4px rgba(26,58,92,0.08);
-  --shadow-md: 0 4px 16px rgba(26,58,92,0.12);
-  --radius: 10px;
-  --radius-sm: 6px;
+  --success: #2ecc71;
+  --danger: #ff5c75;
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html { font-size: 15px; }
-
 body {
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text-primary);
-  line-height: 1.6;
-  min-height: 100vh;
+  font-family: Inter, sans-serif;
+  background: radial-gradient(circle at top, #12203a, #070b14);
+  color: var(--text);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  transition: 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.btn {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4f8cff, #2355a0);
+  color: white;
+}
+
+.btn-outline {
+  border: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.stat-card {
+  padding: 18px;
+  border-radius: 16px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(79,140,255,0.15);
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--muted);
 }
 
 /* ── DARK MODE ─────────────────────────────── */
@@ -561,3 +611,120 @@ select.form-control { cursor: pointer; }
 }
 
 .menu-toggle { display: none; }
+
+.card, .stat-card {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:768px){
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media(max-width:480px){
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   MODERN DATA TABLE (PRO)
+========================= */
+
+.modern-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  background: transparent;
+}
+
+/* HEADER */
+.modern-table thead th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+}
+
+/* ROW */
+.modern-table tbody tr {
+  transition: 0.2s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* HOVER EFFECT (IMPORTANT UX BOOST) */
+.modern-table tbody tr:hover {
+  background: rgba(79,140,255,0.08);
+  transform: scale(1.005);
+}
+
+/* CELL */
+.modern-table td {
+  padding: 14px 12px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+/* FIRST COLUMN (PEKERJA) EMPHASIS */
+.modern-table td:first-child {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* STATUS BADGE AREA */
+.modern-table td:last-child {
+  text-align: left;
+}
+
+/* OPTIONAL: ROW STRIPING (VERY SOFT) */
+.modern-table tbody tr:nth-child(even) {
+  background: rgba(255,255,255,0.015);
+}
+
+/* MOBILE IMPROVEMENT */
+@media(max-width:768px){
+  .modern-table th,
+  .modern-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+}
+
+.badge {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* STATUS COLORS */
+.badge.approved {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+.badge.pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+}
+
+.badge.rejected {
+  background: rgba(255, 92, 117, 0.15);
+  color: #ff5c75;
+}
