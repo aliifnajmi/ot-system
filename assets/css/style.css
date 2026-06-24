@@ -4,35 +4,49 @@
    ============================================ */
 
 :root {
-  --bg: #0b1220;
-  --card: rgba(255,255,255,0.06);
-  --card-border: rgba(255,255,255,0.08);
-  --text: #eaf1ff;
-  --muted: #93a4c7;
-  --primary: #4f8cff;
-  --accent: #c8a44a;
+  /* =========================
+     MULIA BRAND THEME (NEW)
+  ========================= */
+
+  --primary-dark: #0a1a2f;   /* deep navy */
+  --primary: #1a3a5c;        /* Mulia blue */
+  --primary-light: #2f6fab;  /* highlight blue */
+
+  --accent: #7ee081;         /* LIGHT GREEN (Mulia identity) */
+  --accent-light: #a8f0b0;
+
   --success: #2ecc71;
   --danger: #ff5c75;
-  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+
+  --bg: #070f1c;
+  --bg-card: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.08);
+
+  --text-primary: #eaf2ff;
+  --text-secondary: #b7c7df;
+  --text-muted: #7f93ad;
+
+  --shadow-sm: 0 6px 18px rgba(0,0,0,0.35);
+  --shadow-md: 0 12px 40px rgba(0,0,0,0.45);
 }
 
 body {
   font-family: Inter, sans-serif;
-  background: radial-gradient(circle at top, #12203a, #070b14);
-  color: var(--text);
+  background:
+    radial-gradient(circle at top, #102a4a 0%, #070f1c 50%, #050a12 100%);
+  color: var(--text-primary);
 }
 
 .card {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  transition: 0.25s ease;
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
 }
 
 .card:hover {
-  transform: translateY(-4px);
+  border-color: rgba(126,224,129,0.15);
+  box-shadow: var(--shadow-md);
 }
 
 .btn {
@@ -343,37 +357,30 @@ body.dark {
 .stat-trend.down { background: #fce8e6; color: var(--danger); }
 
 /* ── BUTTONS ───────────────────────────────── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 8px 16px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-  text-decoration: none;
-  transition: all 0.18s;
-  white-space: nowrap;
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  box-shadow: 0 6px 18px rgba(26,58,92,0.35);
 }
-.btn i { font-size: 15px; }
 
-.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
-.btn-primary:hover { background: var(--primary-light); border-color: var(--primary-light); }
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(26,58,92,0.45);
+}
 
-.btn-accent { background: var(--accent); color: var(--primary-dark); border-color: var(--accent); }
-.btn-accent:hover { background: var(--accent-light); }
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: #0b1b10;
+}
 
-.btn-outline { background: transparent; color: var(--text-secondary); border-color: var(--border); }
-.btn-outline:hover { background: var(--bg); color: var(--text-primary); }
+.btn-outline {
+  border: 1px solid rgba(126,224,129,0.25);
+}
 
-.btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
-.btn-danger:hover { background: #a93226; }
-
-.btn-success { background: var(--success); color: #fff; border-color: var(--success); }
-.btn-sm { padding: 5px 11px; font-size: 12px; }
-.btn-icon { padding: 7px; border-radius: var(--radius-sm); }
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
 
 /* ── TABLES ────────────────────────────────── */
 .table-wrap { overflow-x: auto; }
@@ -669,8 +676,8 @@ select.form-control { cursor: pointer; }
 
 /* HOVER EFFECT (IMPORTANT UX BOOST) */
 .modern-table tbody tr:hover {
-  background: rgba(79,140,255,0.08);
-  transform: scale(1.005);
+  background: rgba(126, 224, 129, 0.08); /* green tint */
+  transform: scale(1.003);
 }
 
 /* CELL */
