@@ -108,151 +108,105 @@ const API = {
   },
 };
 
-/* ── AUTH ─────────────────────────────────────── */
+/**
+ * Configuration & Authentication Script
+ * Sistem Pengurusan OT — Mulia Group
+ */
+
+// 1. Kekalkan struktur pembolehubah CONFIG sedia ada
+const CONFIG = {
+  SESSION_KEY: 'mulia_ot_session',
+  SESSION_TIMEOUT_MS: 2 * 60 * 60 * 1000, // Sesi aktif selama 2 jam (7200000 ms)
+  ADMIN_PIN: '1234'                      // PIN Lalai untuk Log Masuk Admin
+};
+
+// 2. Objek Auth dengan fungsi login sedia ada
 const Auth = {
-  login(pin) {
-    if (pin !== CONFIG.ADMIN_PIN) return false;
-    const session = {
-      loggedIn: true,
-      loginTime: Date.now(),
-      expires: Date.now() + CONFIG.SESSION_DURATION,
-      user: 'Admin HR',
-      role: 'admin',
-    };
-    localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
-    return true;
+  /**
+   * Mengesahkan PIN yang dimasukkan oleh pengguna
+   * @param {string} inputPin 
+   * @returns {boolean}
+   */
+  login: function(inputPin) {
+    if (inputPin === CONFIG.ADMIN_PIN) {
+      const sessionData = {
+        loggedIn: true,
+        role: 'admin',
+        expires: Date.now() + CONFIG.SESSION_TIMEOUT_MS
+      };
+      
+      // Simpan session data ke localStorage sepadan dengan kawalan window.onload index.html
+      localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(sessionData));
+      return true;
+    }
+    return false;
   },
 
-  logout() {
+  /**
+   * Membuang sesi aktif apabila log keluar
+   */
+  logout: function() {
     localStorage.removeItem(CONFIG.SESSION_KEY);
     window.location.href = 'index.html';
-  },
-
-  check() {
-    try {
-      const s = JSON.parse(localStorage.getItem(CONFIG.SESSION_KEY) || '{}');
-      if (!s.loggedIn || Date.now() > s.expires) {
-        this.logout();
-        return null;
-      }
-      return s;
-    } catch { this.logout(); return null; }
-  },
-
-  requireAuth() {
-    const s = this.check();
-    if (!s) { window.location.href = 'index.html'; }
-    return s;
-  },
+  }
 };
 
-/* ── UTILITIES ────────────────────────────────── */
+// 3. Objek Utils dengan mengekalkan fungsi .toast() sedia ada
 const Utils = {
-  formatDate(dateStr) {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('ms-MY', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    });
-  },
-
-  formatDateTime(dateStr) {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleString('ms-MY', {
-      day: '2-digit', month: 'short', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
-  },
-
-  formatCurrency(amount) {
-    return 'RM ' + Number(amount || 0).toLocaleString('ms-MY', {
-      minimumFractionDigits: 2, maximumFractionDigits: 2
-    });
-  },
-
-  formatHours(h) {
-    return Number(h || 0).toFixed(1) + ' jam';
-  },
-
-  calcOTAmount(hourlyRate, hours, type) {
-    const multiplier = CONFIG.OT_RATES[type] || 1.5;
-    return hourlyRate * hours * multiplier;
-  },
-
-  getDayType(dateStr) {
-    const d = new Date(dateStr);
-    if (CONFIG.PUBLIC_HOLIDAYS_2025.includes(dateStr)) return 'holiday';
-    const day = d.getDay();
-    if (day === 0 || day === 6) return 'weekend';
-    return 'weekday';
-  },
-
-  generateId() {
-    return 'OT-' + Date.now().toString(36).toUpperCase();
-  },
-
-  isValidIC(ic) {
-    return /^\d{12}$/.test(ic.replace(/-/g, ''));
-  },
-
-  toast(msg, type = 'info', duration = 3500) {
+  /**
+   * Menghasilkan popup toast dinamik ke dalam #toast-container
+   * @param {string} message - Mesej teks
+   * @param {string} type - Jenis mod ('success', 'warning', 'danger')
+   */
+  toast: function(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    const icons = { success: 'ti-circle-check', error: 'ti-circle-x', info: 'ti-info-circle', warning: 'ti-alert-triangle' };
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.innerHTML = `<i class="ti ${icons[type] || icons.info}" aria-hidden="true"></i><span>${msg}</span>`;
-    container.appendChild(t);
-    setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translateX(100px)'; t.style.transition = '0.3s'; setTimeout(() => t.remove(), 300); }, duration);
-  },
 
-  showLoading() {
-    let el = document.getElementById('loading-overlay');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'loading-overlay';
-      el.className = 'loading-overlay';
-      el.innerHTML = '<div class="spinner"></div>';
-      document.body.appendChild(el);
-    }
-    el.style.display = 'flex';
-  },
+    const toast = document.createElement('div');
+    // Kekalkan pemakaian class mengikut framework css sedia ada anda (cth: alert alert-success)
+    toast.className = `alert alert-${type === 'danger' ? 'danger' : type} toast-item`;
+    
+    // Gaya minimum untuk pastikan toast terapung dengan kemas
+    toast.style.cssText = `
+      padding: 12px 20px;
+      margin-top: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: toastFadeIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: ${type === 'success' ? '#def7ec' : type === 'warning' ? '#fde8e8' : '#f3f4f6'};
+      color: ${type === 'success' ? '#03543f' : type === 'warning' ? '#9b1c1c' : '#1f2937'};
+    `;
 
-  hideLoading() {
-    const el = document.getElementById('loading-overlay');
-    if (el) el.style.display = 'none';
-  },
+    // Letakkan icon ringkas mengikut jenis toast
+    let icon = 'ti-info-circle';
+    if (type === 'success') icon = 'ti-circle-check';
+    if (type === 'warning' || type === 'danger') icon = 'ti-alert-circle';
+    
+    toast.innerHTML = `<i class="ti ${icon}"></i> <span>${message}</span>`;
+    container.appendChild(toast);
 
-  getMonthName(month, year) {
-    return new Date(year, month - 1).toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' });
-  },
-
-  exportCSV(data, filename) {
-    if (!data.length) return;
-    const headers = Object.keys(data[0]);
-    const rows = [headers.join(','), ...data.map(r => headers.map(h => `"${r[h] || ''}"`).join(','))];
-    const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
-  },
-
-  badgeHTML(status) {
-    const map = {
-      pending:  ['badge-pending',    'ti-clock',        'Menunggu'],
-      approved: ['badge-approved',   'ti-circle-check', 'Diluluskan'],
-      rejected: ['badge-rejected',   'ti-circle-x',     'Ditolak'],
-      processing:['badge-processing','ti-loader',       'Diproses'],
-    };
-    const [cls, icon, label] = map[status] || map.pending;
-    return `<span class="badge ${cls}"><i class="ti ${icon}" aria-hidden="true"></i>${label}</span>`;
-  },
-
-  debounce(fn, delay = 300) {
-    let t;
-    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), delay); };
-  },
+    // Padam secara automatik selepas 3 saat
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
 };
+
+// Tambahkan CSS Keyframe untuk animasi toast secara dinamik jika belum ada dalam style.css
+if (!document.getElementById('toast-animate-style')) {
+  const style = document.createElement('style');
+  style.id = 'toast-animate-style';
+  style.innerHTML = `
+    #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 350px; }
+    @keyframes toastFadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  `;
+  document.head.appendChild(style);
+}
 
 /* ── SIDEBAR ACTIVE LINK ──────────────────────── */
 function setActivePage(pageId) {
