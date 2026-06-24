@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pekerja — Sistem OT Mulia Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app">
+  <main class="main" id="main-content">
+
+    <div class="page-header">
+      <div>
+        <h2>Pengurusan Pekerja</h2>
+        <p id="worker-count">Memuatkan...</p>
+      </div>
+      <div class="page-actions no-print">
+        <div class="search-bar">
+          <i class="ti ti-search" aria-hidden="true"></i>
+          <input type="text" class="form-control" id="search-input" placeholder="Cari nama, ID, jabatan..." style="width:240px;" oninput="filterWorkers(this.value)">
+        </div>
+        <select class="form-control" id="dept-filter" style="width:180px;" onchange="filterWorkers()">
+          <option value="">Semua Jabatan</option>
+        </select>
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="ti ti-user-plus" aria-hidden="true"></i> Tambah Pekerja
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Senarai Pekerja</h3>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="exportWorkers()">
+            <i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Eksport CSV
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="loadWorkers()">
+            <i class="ti ti-refresh" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>No. Pekerja</th>
+              <th>Nama Penuh</th>
+              <th>Jabatan</th>
+              <th>Jawatan</th>
+              <th>Gaji/Jam</th>
+              <th>Status</th>
+              <th class="no-print">Tindakan</th>
+            </tr>
+          </thead>
+          <tbody id="workers-table">
+            <tr><td colspan="8"><div class="empty-state" style="padding:32px;"><i class="ti ti-loader" style="font-size:36px;" aria-hidden="true"></i><p>Memuatkan...</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer" id="table-footer">—</div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="worker-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h4 id="modal-title">Tambah Pekerja</h4>
+      <button class="btn btn-icon btn-outline" onclick="closeModal()" aria-label="Tutup modal">
+        <i class="ti ti-x" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="w-empId">No. Pekerja <span class="required">*</span></label>
+          <input type="text" class="form-control" id="w-empId" placeholder="MP001">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="w-ic">No. Kad Pengenalan <span class="required">*</span></label>
+          <input type="text" class="form-control" id="w-ic" placeholder="901231145678" maxlength="12">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="w-name">Nama Penuh <span class="required">*</span></label>
+        <input type="text" class="form-control" id="w-name" placeholder="Nama seperti dalam MyKad">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="w-dept">Jabatan <span class="required">*</span></label>
+          <select class="form-control" id="w-dept"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="w-pos">Jawatan <span class="required">*</span></label>
+          <input type="text" class="form-control" id="w-pos" placeholder="Contoh: Eksekutif Jualan">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="w-salary">Gaji Pokok (RM/bulan) <span class="required">*</span></label>
+          <input type="number" class="form-control" id="w-salary" placeholder="3000.00" min="0" step="0.01" oninput="calcHourlyRate(this.value)">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Kadar/Jam (auto-kira)</label>
+          <div class="form-control" id="w-hourly" style="background:var(--bg);font-weight:600;color:var(--primary);">RM —</div>
+          <div class="form-hint">Gaji ÷ 26 hari ÷ 8 jam</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="w-phone">No. Telefon</label>
+          <input type="tel" class="form-control" id="w-phone" placeholder="0123456789">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="w-email">E-mel</label>
+          <input type="email" class="form-control" id="w-email" placeholder="nama@mulia.com.my">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="w-join">Tarikh Mula Berkhidmat</label>
+          <input type="date" class="form-control" id="w-join">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="w-status">Status</label>
+          <select class="form-control" id="w-status">
+            <option value="active">Aktif</option>
+            <option value="inactive">Tidak Aktif</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Batal</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveWorker()">
+        <i class="ti ti-device-floppy" aria-hidden="true"></i> Simpan
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- View Modal -->
+<div class="modal-overlay" id="view-modal" role="dialog" aria-modal="true" aria-labelledby="view-title">
+  <div class="modal">
+    <div class="modal-header">
+      <h4 id="view-title">Profil Pekerja</h4>
+      <button class="btn btn-icon btn-outline" onclick="closeViewModal()" aria-label="Tutup"><i class="ti ti-x" aria-hidden="true"></i></button>
+    </div>
+    <div class="modal-body" id="view-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeViewModal()">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+<script src="config/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+buildLayout('workers', 'Pekerja');
+
+let allWorkers = [], filteredWorkers = [];
+
+// Populate dept filter & modal dept select
+CONFIG.DEPARTMENTS.forEach(d => {
+  document.getElementById('dept-filter').innerHTML += `<option value="${d}">${d}</option>`;
+  document.getElementById('w-dept').innerHTML += `<option value="${d}">${d}</option>`;
+});
+
+async function loadWorkers() {
+  Utils.showLoading();
+  try {
+    const data = await API.get('getWorkers');
+    allWorkers = data.workers || [];
+  } catch {
+    allWorkers = getSampleWorkers();
+    Utils.toast('Demo mode: data sampel', 'info');
+  } finally {
+    Utils.hideLoading();
+    filteredWorkers = [...allWorkers];
+    renderTable(filteredWorkers);
+    document.getElementById('worker-count').textContent = `${allWorkers.length} pekerja berdaftar`;
+  }
+}
+
+function filterWorkers(q) {
+  const query = (document.getElementById('search-input').value || '').toLowerCase();
+  const dept = document.getElementById('dept-filter').value;
+  filteredWorkers = allWorkers.filter(w => {
+    const matchQ = !query || w.name.toLowerCase().includes(query) || (w.employeeId||'').toLowerCase().includes(query) || (w.department||'').toLowerCase().includes(query);
+    const matchD = !dept || w.department === dept;
+    return matchQ && matchD;
+  });
+  renderTable(filteredWorkers);
+}
+
+function renderTable(list) {
+  const tbody = document.getElementById('workers-table');
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:32px;"><i class="ti ti-search" style="font-size:36px;" aria-hidden="true"></i><h4>Tiada pekerja ditemui</h4><p>Cuba ubah kata carian atau tapis jabatan</p></div></td></tr>`;
+    document.getElementById('table-footer').textContent = 'Tiada rekod';
+    return;
+  }
+  tbody.innerHTML = list.map((w, i) => `
+    <tr>
+      <td style="color:var(--text-muted);font-size:12px;">${i + 1}</td>
+      <td><span style="font-family:monospace;font-size:12.5px;background:var(--bg);padding:2px 8px;border-radius:4px;border:1px solid var(--border);">${w.employeeId || '—'}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex-shrink:0;">
+            ${(w.name || '?').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()}
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:13.5px;">${w.name}</div>
+            <div style="font-size:11.5px;color:var(--text-muted);">${w.email || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td>${w.department || '—'}</td>
+      <td>${w.position || '—'}</td>
+      <td><strong>${Utils.formatCurrency(w.hourlyRate)}</strong>/jam</td>
+      <td><span class="badge ${w.status === 'active' ? 'badge-approved' : 'badge-rejected'}">${w.status === 'active' ? 'Aktif' : 'Tidak Aktif'}</span></td>
+      <td class="no-print">
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-icon btn-outline btn-sm" onclick="viewWorker('${w.id}')" title="Lihat profil" aria-label="Lihat profil ${w.name}">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+          <button class="btn btn-icon btn-outline btn-sm" onclick="editWorker('${w.id}')" title="Edit" aria-label="Edit ${w.name}">
+            <i class="ti ti-edit" aria-hidden="true"></i>
+          </button>
+          <button class="btn btn-icon btn-danger btn-sm" onclick="deleteWorker('${w.id}', '${w.name}')" title="Padam" aria-label="Padam ${w.name}">
+            <i class="ti ti-trash" aria-hidden="true"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+  document.getElementById('table-footer').textContent = `Menunjukkan ${list.length} daripada ${allWorkers.length} pekerja`;
+}
+
+function calcHourlyRate(salary) {
+  const rate = parseFloat(salary) / 26 / 8;
+  document.getElementById('w-hourly').textContent = isNaN(rate) ? 'RM —' : Utils.formatCurrency(rate);
+}
+
+function openAddModal() {
+  document.getElementById('modal-title').textContent = 'Tambah Pekerja Baharu';
+  document.getElementById('edit-id').value = '';
+  document.getElementById('worker-modal').querySelector('form') && document.getElementById('worker-modal').querySelector('form').reset();
+  ['w-empId','w-ic','w-name','w-pos','w-phone','w-email','w-salary'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('w-hourly').textContent = 'RM —';
+  document.getElementById('w-status').value = 'active';
+  document.getElementById('worker-modal').classList.add('open');
+}
+
+function editWorker(id) {
+  const w = allWorkers.find(x => x.id == id);
+  if (!w) return;
+  document.getElementById('modal-title').textContent = 'Edit Pekerja';
+  document.getElementById('edit-id').value = w.id;
+  document.getElementById('w-empId').value = w.employeeId || '';
+  document.getElementById('w-ic').value = w.ic || '';
+  document.getElementById('w-name').value = w.name || '';
+  document.getElementById('w-dept').value = w.department || '';
+  document.getElementById('w-pos').value = w.position || '';
+  document.getElementById('w-salary').value = w.monthlySalary || '';
+  calcHourlyRate(w.monthlySalary);
+  document.getElementById('w-phone').value = w.phone || '';
+  document.getElementById('w-email').value = w.email || '';
+  document.getElementById('w-join').value = w.joinDate || '';
+  document.getElementById('w-status').value = w.status || 'active';
+  document.getElementById('worker-modal').classList.add('open');
+}
+
+function viewWorker(id) {
+  const w = allWorkers.find(x => x.id == id);
+  if (!w) return;
+  document.getElementById('view-title').textContent = 'Profil — ' + w.name;
+  document.getElementById('view-body').innerHTML = `
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="width:60px;height:60px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;margin:0 auto 8px;">
+        ${(w.name||'?').split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase()}
+      </div>
+      <div style="font-weight:700;font-size:17px;">${w.name}</div>
+      <div style="font-size:12px;color:var(--text-muted);">${w.position} • ${w.department}</div>
+    </div>
+    <table style="width:100%;font-size:13px;">
+      ${[['No. Pekerja', w.employeeId||'—'],['No. IC', w.ic||'—'],['Telefon', w.phone||'—'],['E-mel', w.email||'—'],['Tarikh Mula', Utils.formatDate(w.joinDate)],['Gaji Pokok', Utils.formatCurrency(w.monthlySalary)+'/bulan'],['Kadar OT/Jam', Utils.formatCurrency(w.hourlyRate)]].map(([l,v])=>`<tr><td style="color:var(--text-muted);padding:7px 0;width:140px;">${l}</td><td style="font-weight:600;">${v}</td></tr>`).join('')}
+    </table>`;
+  document.getElementById('view-modal').classList.add('open');
+}
+
+async function saveWorker() {
+  const id = document.getElementById('edit-id').value;
+  const name = document.getElementById('w-name').value.trim();
+  const empId = document.getElementById('w-empId').value.trim();
+  const dept = document.getElementById('w-dept').value;
+  const pos = document.getElementById('w-pos').value.trim();
+  const salary = parseFloat(document.getElementById('w-salary').value);
+
+  if (!name || !empId || !dept || !pos || !salary) {
+    Utils.toast('Sila lengkapkan semua ruangan wajib', 'warning'); return;
+  }
+
+  const payload = {
+    id: id || Date.now().toString(),
+    employeeId: empId, name, department: dept, position: pos,
+    ic: document.getElementById('w-ic').value,
+    monthlySalary: salary,
+    hourlyRate: parseFloat((salary / 26 / 8).toFixed(4)),
+    phone: document.getElementById('w-phone').value,
+    email: document.getElementById('w-email').value,
+    joinDate: document.getElementById('w-join').value,
+    status: document.getElementById('w-status').value,
+  };
+
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Menyimpan...';
+
+  try {
+    await API.post(id ? 'updateWorker' : 'addWorker', payload);
+    Utils.toast(id ? 'Maklumat pekerja dikemaskini!' : 'Pekerja baru ditambah!', 'success');
+  } catch {
+    // Demo: update locally
+    if (id) { const idx = allWorkers.findIndex(w => w.id == id); if (idx > -1) allWorkers[idx] = payload; }
+    else allWorkers.unshift(payload);
+    Utils.toast('Disimpan dalam demo mode.', 'info');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-device-floppy" aria-hidden="true"></i> Simpan';
+    closeModal(); filteredWorkers = [...allWorkers]; renderTable(filteredWorkers);
+    document.getElementById('worker-count').textContent = `${allWorkers.length} pekerja berdaftar`;
+  }
+}
+
+async function deleteWorker(id, name) {
+  if (!confirm(`Padam pekerja "${name}"? Tindakan ini tidak boleh dibatalkan.`)) return;
+  try {
+    await API.post('deleteWorker', { id });
+    Utils.toast('Pekerja dipadam.', 'success');
+  } catch {
+    allWorkers = allWorkers.filter(w => w.id != id);
+    Utils.toast('Dipadam dalam demo mode.', 'info');
+  }
+  filteredWorkers = allWorkers.filter(w => w.id != id);
+  allWorkers = filteredWorkers.slice();
+  renderTable(filteredWorkers);
+}
+
+function exportWorkers() {
+  Utils.exportCSV(filteredWorkers.map(w => ({
+    'No. Pekerja': w.employeeId, 'Nama': w.name, 'Jabatan': w.department,
+    'Jawatan': w.position, 'Gaji Pokok': w.monthlySalary, 'Kadar/Jam': w.hourlyRate,
+    'Telefon': w.phone, 'Email': w.email, 'Status': w.status,
+  })), `Pekerja_Mulia_${new Date().toISOString().split('T')[0]}.csv`);
+  Utils.toast('Fail CSV dimuat turun.', 'success');
+}
+
+function closeModal() { document.getElementById('worker-modal').classList.remove('open'); }
+function closeViewModal() { document.getElementById('view-modal').classList.remove('open'); }
+
+function getSampleWorkers() {
+  return [
+    { id:'1', employeeId:'MP001', name:'Ahmad Fadzil bin Hassan', department:'Operasi & Penyelenggaraan', position:'Pengurus Operasi', ic:'801231145678', monthlySalary:5800, hourlyRate:27.88, phone:'0123456789', email:'ahmad@mulia.com.my', joinDate:'2018-03-01', status:'active' },
+    { id:'2', employeeId:'MP002', name:'Siti Aminah binti Razak', department:'Jualan & Pemasaran', position:'Eksekutif Jualan', ic:'910505085432', monthlySalary:3500, hourlyRate:16.83, phone:'0134567890', email:'siti@mulia.com.my', joinDate:'2020-06-15', status:'active' },
+    { id:'3', employeeId:'MP003', name:'Raj Kumar a/l Subramaniam', department:'Projek & Pembangunan', position:'Jurutera Projek', ic:'880215105534', monthlySalary:6200, hourlyRate:29.81, phone:'0145678901', email:'raj@mulia.com.my', joinDate:'2017-09-10', status:'active' },
+    { id:'4', employeeId:'MP004', name:'Noraini binti Ali', department:'Kewangan & Akaun', position:'Akauntan Kanan', ic:'850820065219', monthlySalary:5100, hourlyRate:24.52, phone:'0156789012', email:'noraini@mulia.com.my', joinDate:'2019-01-20', status:'active' },
+    { id:'5', employeeId:'MP005', name:'Hazwan Hafiz bin Zakaria', department:'IT & Sistem', position:'Pegawai IT', ic:'940303085678', monthlySalary:4200, hourlyRate:20.19, phone:'0167890123', email:'hazwan@mulia.com.my', joinDate:'2021-04-01', status:'active' },
+    { id:'6', employeeId:'MP006', name:'Farah Diana binti Ismail', department:'Sumber Manusia', position:'Pengurus HR', ic:'870915026789', monthlySalary:5500, hourlyRate:26.44, phone:'0178901234', email:'farah@mulia.com.my', joinDate:'2016-11-15', status:'active' },
+    { id:'7', employeeId:'MP007', name:'Khairul Azmi bin Hamdan', department:'Jualan & Pemasaran', position:'Pengurus Pemasaran', ic:'780620145876', monthlySalary:7000, hourlyRate:33.65, phone:'0189012345', email:'khairul@mulia.com.my', joinDate:'2014-02-28', status:'active' },
+  ];
+}
+
+window.addEventListener('load', () => {
+  loadWorkers();
+  if (new URLSearchParams(window.location.search).get('action') === 'add') setTimeout(openAddModal, 500);
+});
+</script>
+</body>
+</html>

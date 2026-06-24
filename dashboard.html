@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Sistem OT Mulia Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <main class="main" id="main-content">
+
+    <div class="page-header">
+      <div>
+        <h2>Dashboard</h2>
+        <p id="today-date">Selamat datang, Admin HR</p>
+      </div>
+      <div class="page-actions no-print">
+        <button class="btn btn-outline btn-sm" onclick="refreshDashboard()">
+          <i class="ti ti-refresh" aria-hidden="true"></i> Muat Semula
+        </button>
+        <a href="submit_ot.html" class="btn btn-primary btn-sm">
+          <i class="ti ti-plus" aria-hidden="true"></i> Hantar OT Baru
+        </a>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon"><i class="ti ti-users" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-label">Jumlah Pekerja</div>
+          <div class="stat-value" id="stat-workers">—</div>
+          <div class="stat-sub">Aktif dalam sistem</div>
+        </div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-icon"><i class="ti ti-clock" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-label">OT Bulan Ini</div>
+          <div class="stat-value" id="stat-ot-hours">—</div>
+          <div class="stat-sub" id="stat-ot-sub">jumlah jam</div>
+        </div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon"><i class="ti ti-circle-check" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-label">Diluluskan</div>
+          <div class="stat-value" id="stat-approved">—</div>
+          <div class="stat-sub">Bulan ini</div>
+        </div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon"><i class="ti ti-clock-pause" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-label">Menunggu Kelulusan</div>
+          <div class="stat-value" id="stat-pending">—</div>
+          <div class="stat-sub"><a href="verify.html" style="color:var(--danger);font-size:11.5px;">Semak sekarang →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;" class="charts-grid">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ti ti-chart-bar" style="color:var(--primary);margin-right:6px;" aria-hidden="true"></i>OT Mengikut Jabatan</h3>
+          <span id="chart-month" style="font-size:12px;color:var(--text-muted);"></span>
+        </div>
+        <div class="card-body" style="padding:16px;">
+          <canvas id="dept-chart" height="220" aria-label="Carta OT mengikut jabatan"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ti ti-chart-line" style="color:var(--accent);margin-right:6px;" aria-hidden="true"></i>Trend OT 6 Bulan</h3>
+        </div>
+        <div class="card-body" style="padding:16px;">
+          <canvas id="trend-chart" height="220" aria-label="Carta trend OT 6 bulan"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- OT By Type Summary -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px;margin-bottom:20px;">
+      <div class="card">
+        <div class="card-header"><h3>Jenis OT Bulan Ini</h3></div>
+        <div class="card-body" style="padding:16px;">
+          <canvas id="type-chart" height="200" aria-label="Carta jenis OT"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent OT Submissions -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Permohonan OT Terbaru</h3>
+          <a href="ot_records.html" class="btn btn-outline btn-sm">Lihat semua</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pekerja</th>
+                <th>Tarikh OT</th>
+                <th>Jam</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recent-table">
+              <tr><td colspan="4"><div class="empty-state" style="padding:24px;"><i class="ti ti-loader" style="font-size:28px;" aria-hidden="true"></i><p>Memuatkan data...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card no-print">
+      <div class="card-header"><h3>Tindakan Pantas</h3></div>
+      <div class="card-body">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <a href="submit_ot.html" class="btn btn-primary">
+            <i class="ti ti-clock-plus" aria-hidden="true"></i> Hantar OT
+          </a>
+          <a href="workers.html?action=add" class="btn btn-outline">
+            <i class="ti ti-user-plus" aria-hidden="true"></i> Tambah Pekerja
+          </a>
+          <a href="verify.html" class="btn btn-outline">
+            <i class="ti ti-checks" aria-hidden="true"></i> Lulus OT Tertunggak
+          </a>
+          <a href="report.html" class="btn btn-outline">
+            <i class="ti ti-file-spreadsheet" aria-hidden="true"></i> Jana Laporan
+          </a>
+          <button class="btn btn-outline" onclick="window.print()">
+            <i class="ti ti-printer" aria-hidden="true"></i> Cetak Dashboard
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="config/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+buildLayout('dashboard', 'Dashboard');
+
+// Set date
+document.getElementById('today-date').textContent =
+  'Hari ini: ' + new Date().toLocaleDateString('ms-MY', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+document.getElementById('chart-month').textContent = Utils.getMonthName(new Date().getMonth()+1, new Date().getFullYear());
+
+let deptChart, trendChart, typeChart;
+
+async function refreshDashboard() {
+  Utils.showLoading();
+  try {
+    const data = await API.get('getDashboard');
+    renderStats(data.stats);
+    renderRecentTable(data.recent);
+    renderCharts(data);
+  } catch(e) {
+    // Demo mode — guna data sampel
+    renderStats({ workers: 32, otHours: 247, approved: 18, pending: 5 });
+    renderRecentTable(getSampleRecords());
+    renderCharts(getSampleChartData());
+    Utils.toast('Demo mode: data sampel dipaparkan', 'info');
+  } finally {
+    Utils.hideLoading();
+  }
+}
+
+function renderStats(s) {
+  document.getElementById('stat-workers').textContent = s.workers || 0;
+  document.getElementById('stat-ot-hours').textContent = (s.otHours || 0) + ' jam';
+  document.getElementById('stat-approved').textContent = s.approved || 0;
+  document.getElementById('stat-pending').textContent = s.pending || 0;
+}
+
+function renderRecentTable(records) {
+  const tbody = document.getElementById('recent-table');
+  if (!records || !records.length) {
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state" style="padding:24px;"><i class="ti ti-inbox" aria-hidden="true"></i><p>Tiada rekod ditemui</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = records.slice(0, 8).map(r => `
+    <tr>
+      <td>
+        <div style="font-weight:600;font-size:13.5px;">${r.name}</div>
+        <div style="font-size:11.5px;color:var(--text-muted);">${r.department}</div>
+      </td>
+      <td>${Utils.formatDate(r.otDate)}</td>
+      <td><strong>${r.hours}</strong> jam</td>
+      <td>${Utils.badgeHTML(r.status)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderCharts(data) {
+  const isDark = document.body.classList.contains('dark');
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const textColor = isDark ? '#8dafc8' : '#4a6480';
+  Chart.defaults.color = textColor;
+
+  // Dept chart
+  const deptCtx = document.getElementById('dept-chart').getContext('2d');
+  if (deptChart) deptChart.destroy();
+  deptChart = new Chart(deptCtx, {
+    type: 'bar',
+    data: {
+      labels: data.deptLabels || [],
+      datasets: [{
+        label: 'Jam OT',
+        data: data.deptData || [],
+        backgroundColor: 'rgba(26,58,92,0.75)',
+        borderColor: '#1a3a5c',
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: gridColor }, beginAtZero: true, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Trend chart
+  const trendCtx = document.getElementById('trend-chart').getContext('2d');
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(trendCtx, {
+    type: 'line',
+    data: {
+      labels: data.trendLabels || [],
+      datasets: [{
+        label: 'Jam OT',
+        data: data.trendData || [],
+        borderColor: '#c8a44a',
+        backgroundColor: 'rgba(200,164,74,0.12)',
+        tension: 0.4, fill: true,
+        pointBackgroundColor: '#c8a44a',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { font: { size: 11 } } },
+        y: { grid: { color: gridColor }, beginAtZero: true, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Type chart
+  const typeCtx = document.getElementById('type-chart').getContext('2d');
+  if (typeChart) typeChart.destroy();
+  typeChart = new Chart(typeCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Hari Bekerja', 'Hujung Minggu', 'Cuti Umum'],
+      datasets: [{
+        data: data.typeData || [60, 30, 10],
+        backgroundColor: ['#1a3a5c', '#c8a44a', '#2355a0'],
+        borderWidth: 2,
+        borderColor: isDark ? '#162233' : '#fff',
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 14 } } }
+    }
+  });
+}
+
+function getSampleRecords() {
+  return [
+    { name:'Ahmad Fadzil', department:'Operasi', otDate:'2025-06-20', hours:3, status:'approved' },
+    { name:'Siti Aminah', department:'Jualan', otDate:'2025-06-19', hours:2, status:'pending' },
+    { name:'Raj Kumar', department:'Projek', otDate:'2025-06-18', hours:4, status:'approved' },
+    { name:'Noraini Binti Ali', department:'Kewangan', otDate:'2025-06-17', hours:2.5, status:'pending' },
+    { name:'Hazwan Hafiz', department:'IT', otDate:'2025-06-16', hours:3.5, status:'rejected' },
+    { name:'Farah Diana', department:'Pengurusan', otDate:'2025-06-15', hours:2, status:'approved' },
+  ];
+}
+
+function getSampleChartData() {
+  return {
+    deptLabels: ['Pengurusan','Jualan','Kewangan','Operasi','Projek','IT'],
+    deptData: [24, 48, 18, 72, 63, 22],
+    trendLabels: ['Jan','Feb','Mac','Apr','Mei','Jun'],
+    trendData: [180, 210, 165, 240, 195, 247],
+    typeData: [62, 28, 10],
+  };
+}
+
+window.addEventListener('load', refreshDashboard);
+</script>
+<style>
+@media(max-width:768px){ .charts-grid{grid-template-columns:1fr!important;} }
+</style>
+</body>
+</html>

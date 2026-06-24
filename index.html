@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Masuk — Sistem OT Mulia Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    body { background: linear-gradient(135deg, #0e2240 0%, #1a3a5c 60%, #1a5c8c 100%); }
+    #login-page { background: transparent; }
+    .login-card { animation: fadeUp 0.4s ease; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .pin-dots { display:flex; gap:10px; justify-content:center; margin:16px 0 20px; }
+    .pin-dot { width:14px; height:14px; border-radius:50%; border:2px solid #c5d3e0; background:transparent; transition:all 0.2s; }
+    .pin-dot.filled { background:#1a3a5c; border-color:#1a3a5c; }
+    .pin-pad { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-width:220px; margin:0 auto; }
+    .pin-key { height:50px; border-radius:10px; border:1.5px solid #dce4ee; background:#f8fafd; font-size:18px; font-weight:700; color:#1a3a5c; cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; }
+    .pin-key:hover { background:#e8f0fb; border-color:#1a3a5c; }
+    .pin-key:active { transform:scale(0.93); }
+    .pin-key.clear { font-size:13px; font-weight:600; color:#c0392b; background:#fce8e6; border-color:#f1948a; }
+    .pin-key.del { font-size:20px; color:#4a6480; }
+    .divider { display:flex; align-items:center; gap:10px; margin:16px 0; color:#aaa; font-size:12px; }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:#eee; }
+    .bg-decor { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .bg-decor span { position:absolute; border-radius:50%; background:rgba(200,164,74,0.06); }
+    .year-badge { display:inline-block; background:#f0f5ff; color:#1a3a5c; font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:14px; letter-spacing:0.5px; }
+  </style>
+</head>
+<body>
+<div class="bg-decor">
+  <span style="width:500px;height:500px;top:-200px;right:-150px;"></span>
+  <span style="width:300px;height:300px;bottom:-100px;left:-80px;background:rgba(255,255,255,0.03);"></span>
+</div>
+
+<div id="login-page">
+  <div class="login-card" style="position:relative;z-index:1;">
+    <div class="login-logo">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#1a3a5c,#2355a0);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+        <i class="ti ti-building-skyscraper" style="font-size:32px;color:#c8a44a;" aria-hidden="true"></i>
+      </div>
+      <h2 style="margin-top:12px;">Mulia Group</h2>
+      <p>Mulia Properties Development Sdn Bhd</p>
+      <div class="year-badge">Sistem Pengurusan OT</div>
+    </div>
+
+    <div id="login-error" class="alert alert-danger" style="display:none;">
+      <i class="ti ti-circle-x" aria-hidden="true"></i>
+      <span id="login-error-msg">PIN tidak sah. Sila cuba lagi.</span>
+    </div>
+
+    <p style="font-size:12.5px;color:#888;text-align:center;margin-bottom:4px;">Masukkan PIN Admin</p>
+    <div class="pin-dots" id="pin-dots">
+      <div class="pin-dot" id="dot-0"></div>
+      <div class="pin-dot" id="dot-1"></div>
+      <div class="pin-dot" id="dot-2"></div>
+      <div class="pin-dot" id="dot-3"></div>
+    </div>
+
+    <div class="pin-pad" role="group" aria-label="Pad PIN">
+      <button class="pin-key" onclick="addPin('1')">1</button>
+      <button class="pin-key" onclick="addPin('2')">2</button>
+      <button class="pin-key" onclick="addPin('3')">3</button>
+      <button class="pin-key" onclick="addPin('4')">4</button>
+      <button class="pin-key" onclick="addPin('5')">5</button>
+      <button class="pin-key" onclick="addPin('6')">6</button>
+      <button class="pin-key" onclick="addPin('7')">7</button>
+      <button class="pin-key" onclick="addPin('8')">8</button>
+      <button class="pin-key" onclick="addPin('9')">9</button>
+      <button class="pin-key clear" onclick="clearPin()">Padam</button>
+      <button class="pin-key" onclick="addPin('0')">0</button>
+      <button class="pin-key del" onclick="deletePin()" aria-label="Padam satu digit">
+        <i class="ti ti-backspace" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="divider">atau</div>
+
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <input type="password" id="pin-input" class="form-control" placeholder="Taip PIN di sini..." maxlength="4" style="text-align:center;letter-spacing:8px;font-size:20px;" oninput="syncPinInput(this.value)" onkeydown="if(event.key==='Enter')submitPin()">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitPin()">
+        <i class="ti ti-login" aria-hidden="true"></i> Log Masuk
+      </button>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:#bbb;margin-top:20px;">
+      <i class="ti ti-lock" style="font-size:13px;" aria-hidden="true"></i>
+      Sistem dalaman — akses terhad
+    </p>
+  </div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="config/config.js"></script>
+<script>
+let pin = '';
+
+function updateDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('dot-' + i).classList.toggle('filled', i < pin.length);
+  }
+}
+
+function addPin(d) {
+  if (pin.length >= 4) return;
+  pin += d;
+  updateDots();
+  if (pin.length === 4) setTimeout(submitPin, 200);
+}
+
+function deletePin() {
+  pin = pin.slice(0, -1);
+  updateDots();
+  document.getElementById('pin-input').value = pin;
+}
+
+function clearPin() {
+  pin = '';
+  updateDots();
+  document.getElementById('pin-input').value = '';
+  document.getElementById('login-error').style.display = 'none';
+}
+
+function syncPinInput(val) {
+  pin = val.slice(0, 4);
+  updateDots();
+}
+
+function submitPin() {
+  if (pin.length < 4) { Utils.toast('Sila masukkan 4 digit PIN', 'warning'); return; }
+  if (Auth.login(pin)) {
+    Utils.toast('Log masuk berjaya! Selamat datang, Admin.', 'success');
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 600);
+  } else {
+    document.getElementById('login-error').style.display = 'flex';
+    document.getElementById('login-error-msg').textContent = 'PIN tidak sah. Sila cuba lagi.';
+    pin = '';
+    updateDots();
+    document.getElementById('pin-input').value = '';
+    const card = document.querySelector('.login-card');
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = 'shake 0.4s ease';
+  }
+}
+
+// Check kalau dah login
+window.addEventListener('load', () => {
+  const s = JSON.parse(localStorage.getItem(CONFIG.SESSION_KEY) || '{}');
+  if (s.loggedIn && Date.now() < s.expires) {
+    window.location.href = 'dashboard.html';
+  }
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key >= '0' && e.key <= '9') addPin(e.key);
+  if (e.key === 'Backspace') deletePin();
+  if (e.key === 'Enter') submitPin();
+});
+</script>
+<style>
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)}
+}
+</style>
+</body>
+</html>

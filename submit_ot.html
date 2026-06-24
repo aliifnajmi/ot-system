@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hantar OT — Sistem OT Mulia Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div id="app">
+  <main class="main" id="main-content">
+
+    <div class="page-header">
+      <div>
+        <h2>Hantar Permohonan OT</h2>
+        <p>Isi borang berikut untuk merekodkan kerja lebih masa</p>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;" class="submit-grid">
+
+      <!-- Form -->
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="ti ti-clock-plus" style="color:var(--primary);margin-right:6px;" aria-hidden="true"></i>Butiran OT</h3>
+        </div>
+        <div class="card-body">
+
+          <div id="form-alert" style="display:none;"></div>
+
+          <form id="ot-form" novalidate>
+
+            <div class="form-group">
+              <label class="form-label" for="worker-select">Pilih Pekerja <span class="required">*</span></label>
+              <select class="form-control" id="worker-select" required>
+                <option value="">— Pilih Pekerja —</option>
+              </select>
+            </div>
+
+            <div id="worker-info" style="display:none;" class="alert alert-info" style="margin-bottom:16px;">
+              <i class="ti ti-user" aria-hidden="true"></i>
+              <div>
+                <strong id="wi-name">—</strong>
+                <div style="font-size:12px;margin-top:2px;" id="wi-detail">—</div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="ot-date">Tarikh OT <span class="required">*</span></label>
+                <input type="date" class="form-control" id="ot-date" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ot-type">Jenis OT <span class="required">*</span></label>
+                <select class="form-control" id="ot-type" required>
+                  <option value="">— Auto-detect dari tarikh —</option>
+                  <option value="weekday">Hari Bekerja (1.5x)</option>
+                  <option value="weekend">Hujung Minggu (2.0x)</option>
+                  <option value="holiday">Cuti Umum (3.0x)</option>
+                </select>
+                <div class="form-hint" id="day-type-hint"></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="time-start">Masa Mula <span class="required">*</span></label>
+                <input type="time" class="form-control" id="time-start" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="time-end">Masa Tamat <span class="required">*</span></label>
+                <input type="time" class="form-control" id="time-end" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="ot-hours">Jumlah Jam <span class="required">*</span></label>
+                <input type="number" class="form-control" id="ot-hours" min="0.5" max="4" step="0.5" placeholder="1 - 4 jam" required>
+                <div class="form-hint">Max: 4 jam sehari (Akta Kerja 1955)</div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Anggaran Bayaran OT</label>
+                <div class="form-control" id="ot-estimate" style="background:var(--bg);font-weight:700;color:var(--success);font-size:16px;">RM —</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ot-reason">Sebab / Keterangan Kerja <span class="required">*</span></label>
+              <textarea class="form-control" id="ot-reason" rows="3" placeholder="Terangkan kerja yang dilakukan semasa OT..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="supervisor-name">Nama Penyelia</label>
+              <input type="text" class="form-control" id="supervisor-name" placeholder="Nama penyelia yang meluluskan">
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px;">
+              <button type="submit" class="btn btn-primary" id="submit-btn" style="flex:1;justify-content:center;">
+                <i class="ti ti-send" aria-hidden="true"></i> Hantar Permohonan
+              </button>
+              <button type="button" class="btn btn-outline" onclick="resetForm()">
+                <i class="ti ti-refresh" aria-hidden="true"></i> Padam
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Sidebar info -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+
+        <!-- OT Calculator -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="ti ti-calculator" style="color:var(--accent);margin-right:6px;" aria-hidden="true"></i>Kalkulator OT</h3>
+          </div>
+          <div class="card-body" style="font-size:13px;">
+            <table style="width:100%;font-size:12.5px;">
+              <tr>
+                <td style="color:var(--text-muted);padding:5px 0;">Gaji Pokok/Jam</td>
+                <td id="calc-rate" style="text-align:right;font-weight:600;">RM —</td>
+              </tr>
+              <tr>
+                <td style="color:var(--text-muted);padding:5px 0;">Kadar OT</td>
+                <td id="calc-multiplier" style="text-align:right;font-weight:600;color:var(--primary);">— ×</td>
+              </tr>
+              <tr>
+                <td style="color:var(--text-muted);padding:5px 0;">Jam OT</td>
+                <td id="calc-hours" style="text-align:right;font-weight:600;">— jam</td>
+              </tr>
+              <tr style="border-top:1px solid var(--border);">
+                <td style="padding-top:8px;font-weight:700;">Jumlah OT</td>
+                <td id="calc-total" style="text-align:right;font-weight:800;font-size:15px;color:var(--success);padding-top:8px;">RM —</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- Rules -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="ti ti-info-circle" style="color:var(--info);margin-right:6px;" aria-hidden="true"></i>Peraturan OT</h3>
+          </div>
+          <div class="card-body" style="font-size:12.5px;color:var(--text-secondary);line-height:1.7;">
+            <p style="margin-bottom:8px;"><i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i> Max <strong>4 jam</strong> sehari</p>
+            <p style="margin-bottom:8px;"><i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i> Max <strong>104 jam</strong> sebulan</p>
+            <p style="margin-bottom:8px;"><i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i> Hari Bekerja: <strong>1.5×</strong> gaji</p>
+            <p style="margin-bottom:8px;"><i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i> Hujung Minggu: <strong>2.0×</strong> gaji</p>
+            <p><i class="ti ti-circle-check" style="color:var(--success);" aria-hidden="true"></i> Cuti Umum: <strong>3.0×</strong> gaji</p>
+            <hr style="border:none;border-top:1px solid var(--border);margin:10px 0;">
+            <p style="font-size:11.5px;color:var(--text-muted);">Rujukan: Akta Kerja 1955, Seksyen 60A</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="config/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+buildLayout('submit', 'Hantar OT');
+
+let workers = [];
+let selectedWorker = null;
+
+async function loadWorkers() {
+  const sel = document.getElementById('worker-select');
+  try {
+    const data = await API.get('getWorkers');
+    workers = data.workers || [];
+  } catch {
+    // Demo mode
+    workers = getSampleWorkers();
+    Utils.toast('Demo mode: data sampel dipaparkan', 'info');
+  }
+  workers.forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w.id;
+    opt.textContent = `${w.name} (${w.employeeId})`;
+    sel.appendChild(opt);
+  });
+}
+
+document.getElementById('worker-select').addEventListener('change', function() {
+  selectedWorker = workers.find(w => w.id == this.value);
+  const info = document.getElementById('worker-info');
+  if (selectedWorker) {
+    info.style.display = 'flex';
+    document.getElementById('wi-name').textContent = selectedWorker.name;
+    document.getElementById('wi-detail').textContent =
+      `${selectedWorker.department} • ${selectedWorker.position} • Gaji/jam: RM ${Number(selectedWorker.hourlyRate || 0).toFixed(2)}`;
+    updateEstimate();
+  } else {
+    info.style.display = 'none';
+  }
+});
+
+document.getElementById('ot-date').addEventListener('change', function() {
+  const type = Utils.getDayType(this.value);
+  const typeSelect = document.getElementById('ot-type');
+  typeSelect.value = type;
+  const labels = { weekday:'Hari Bekerja (kadar 1.5×)', weekend:'Hujung Minggu (kadar 2.0×)', holiday:'Cuti Umum (kadar 3.0×)' };
+  document.getElementById('day-type-hint').textContent = '📅 Auto-detect: ' + (labels[type] || '');
+  updateEstimate();
+});
+
+document.getElementById('time-start').addEventListener('change', calcHoursFromTime);
+document.getElementById('time-end').addEventListener('change', calcHoursFromTime);
+
+function calcHoursFromTime() {
+  const start = document.getElementById('time-start').value;
+  const end = document.getElementById('time-end').value;
+  if (start && end) {
+    const [sh, sm] = start.split(':').map(Number);
+    const [eh, em] = end.split(':').map(Number);
+    let hours = ((eh * 60 + em) - (sh * 60 + sm)) / 60;
+    if (hours <= 0) hours += 24;
+    hours = Math.min(Math.max(parseFloat(hours.toFixed(1)), 0), 4);
+    document.getElementById('ot-hours').value = hours;
+    updateEstimate();
+  }
+}
+
+document.getElementById('ot-hours').addEventListener('input', updateEstimate);
+document.getElementById('ot-type').addEventListener('change', updateEstimate);
+
+function updateEstimate() {
+  if (!selectedWorker) return;
+  const hours = parseFloat(document.getElementById('ot-hours').value) || 0;
+  const type = document.getElementById('ot-type').value || 'weekday';
+  const rate = parseFloat(selectedWorker.hourlyRate || 0);
+  const multiplier = CONFIG.OT_RATES[type] || 1.5;
+  const total = rate * hours * multiplier;
+
+  document.getElementById('ot-estimate').textContent = Utils.formatCurrency(total);
+  document.getElementById('calc-rate').textContent = Utils.formatCurrency(rate);
+  document.getElementById('calc-multiplier').textContent = multiplier.toFixed(1) + '×';
+  document.getElementById('calc-hours').textContent = hours.toFixed(1) + ' jam';
+  document.getElementById('calc-total').textContent = Utils.formatCurrency(total);
+}
+
+document.getElementById('ot-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const alert = document.getElementById('form-alert');
+  alert.style.display = 'none';
+
+  // Validate
+  const workerId = document.getElementById('worker-select').value;
+  const date = document.getElementById('ot-date').value;
+  const hours = parseFloat(document.getElementById('ot-hours').value);
+  const type = document.getElementById('ot-type').value;
+  const reason = document.getElementById('ot-reason').value.trim();
+
+  if (!workerId || !date || !hours || !type || !reason) {
+    alert.className = 'alert alert-danger';
+    alert.innerHTML = '<i class="ti ti-circle-x" aria-hidden="true"></i><span>Sila lengkapkan semua ruangan yang bertanda *</span>';
+    alert.style.display = 'flex';
+    return;
+  }
+  if (hours > 4) {
+    alert.className = 'alert alert-danger';
+    alert.innerHTML = '<i class="ti ti-circle-x" aria-hidden="true"></i><span>Jam OT melebihi had maksimum 4 jam sehari.</span>';
+    alert.style.display = 'flex';
+    return;
+  }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Menghantar...';
+
+  try {
+    const payload = {
+      id: Utils.generateId(),
+      workerId, workerName: selectedWorker.name,
+      department: selectedWorker.department,
+      date, type, hours,
+      timeStart: document.getElementById('time-start').value,
+      timeEnd: document.getElementById('time-end').value,
+      reason, supervisor: document.getElementById('supervisor-name').value,
+      otAmount: Utils.calcOTAmount(selectedWorker.hourlyRate, hours, type),
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
+    };
+    await API.post('submitOT', payload);
+    Utils.toast('Permohonan OT berjaya dihantar!', 'success');
+    resetForm();
+    setTimeout(() => { window.location.href = 'ot_records.html'; }, 1500);
+  } catch {
+    Utils.toast('Permohonan OT disimpan dalam mod demo.', 'info');
+    setTimeout(() => { window.location.href = 'ot_records.html'; }, 1200);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-send" aria-hidden="true"></i> Hantar Permohonan';
+  }
+});
+
+function resetForm() {
+  document.getElementById('ot-form').reset();
+  selectedWorker = null;
+  document.getElementById('worker-info').style.display = 'none';
+  document.getElementById('ot-estimate').textContent = 'RM —';
+  document.getElementById('calc-rate').textContent = 'RM —';
+  document.getElementById('calc-multiplier').textContent = '— ×';
+  document.getElementById('calc-hours').textContent = '— jam';
+  document.getElementById('calc-total').textContent = 'RM —';
+  document.getElementById('day-type-hint').textContent = '';
+  document.getElementById('form-alert').style.display = 'none';
+}
+
+function getSampleWorkers() {
+  return [
+    { id:'1', name:'Ahmad Fadzil bin Hassan', employeeId:'MP001', department:'Operasi & Penyelenggaraan', position:'Pengurus Operasi', hourlyRate:18.75 },
+    { id:'2', name:'Siti Aminah binti Razak', employeeId:'MP002', department:'Jualan & Pemasaran', position:'Eksekutif Jualan', hourlyRate:13.50 },
+    { id:'3', name:'Raj Kumar a/l Subramaniam', employeeId:'MP003', department:'Projek & Pembangunan', position:'Jurutera Projek', hourlyRate:22.00 },
+    { id:'4', name:'Noraini binti Ali', employeeId:'MP004', department:'Kewangan & Akaun', position:'Akauntan', hourlyRate:17.30 },
+    { id:'5', name:'Hazwan Hafiz bin Zakaria', employeeId:'MP005', department:'IT & Sistem', position:'Pegawai IT', hourlyRate:15.60 },
+  ];
+}
+
+window.addEventListener('load', () => {
+  loadWorkers();
+  document.getElementById('ot-date').max = new Date().toISOString().split('T')[0];
+});
+</script>
+<style>
+@media(max-width:768px){.submit-grid{grid-template-columns:1fr!important;}}
+</style>
+</body>
+</html>
