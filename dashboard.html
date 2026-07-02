@@ -6,10 +6,16 @@
     <title>BMS Command Center - Mulia OT System</title>
     
     <link rel="stylesheet" href="assets/css/style.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Tambahan CSS kecil untuk dropdown/profil jika diperlukan dalam HTML */
+        .user-actions { display: flex; align-items: center; gap: 15px; }
+        .logout-btn { color: var(--danger); text-decoration: none; font-weight: 500; font-size: 14px; }
+        .logout-btn:hover { text-decoration: underline; }
+        .profile-link { text-decoration: none; }
+    </style>
 </head>
 <body>
 
@@ -30,6 +36,11 @@
             <a href="dashboard.html" class="nav-item active"><i class="fas fa-home"></i> Dashboard</a>
             <a href="workers.html" class="nav-item"><i class="fas fa-users"></i> Direktori Pekerja</a>
             <a href="manage_ot.html" class="nav-item"><i class="fas fa-tasks"></i> Urus OT</a>
+            
+            <div class="nav-section-label" style="margin-top: 20px;">Operasi OT</div>
+            <a href="submit_ot.html" class="nav-item"><i class="fas fa-plus-circle"></i> Hantar OT</a>
+            <a href="ot_records.html" class="nav-item"><i class="fas fa-history"></i> Rekod OT</a>
+            <a href="verify.html" class="nav-item"><i class="fas fa-check-double"></i> Pengesahan (Verify)</a>
         </nav>
     </aside>
 
@@ -37,8 +48,11 @@
         <div class="topbar-left">
             <div class="topbar-title">Dashboard Enterprise</div>
         </div>
-        <div class="topbar-right">
-            <div class="user-avatar">A</div>
+        <div class="topbar-right user-actions">
+            <a href="index.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Keluar</a>
+            <a href="profile.html" class="profile-link">
+                <div class="user-avatar" title="Lihat Profil">A</div>
+            </a>
         </div>
     </header>
 
@@ -50,11 +64,11 @@
                 <p><i class="fas fa-map-marker-alt" style="color: var(--danger); margin-right: 5px;"></i> Exchange 106 · Mulia Property Development</p>
             </div>
             <div style="display: flex; gap: 12px;">
-                <a href="workers.html" class="btn btn-outline">
-                    <i class="fas fa-users"></i> Direktori Pekerja
+                <a href="submit_ot.html" class="btn btn-outline">
+                    <i class="fas fa-plus"></i> Cipta OT Baru
                 </a>
-                <a href="manage_ot.html" class="btn btn-primary">
-                    <i class="fas fa-tasks"></i> Urus OT
+                <a href="verify.html" class="btn btn-primary">
+                    <i class="fas fa-clipboard-check"></i> Pengesahan
                     <span style="background: var(--mulia-navy-dark); color: var(--mulia-green); border-radius: 20px; padding: 2px 8px; font-size: 11px; margin-left: 5px;">12</span>
                 </a>
             </div>
@@ -138,7 +152,7 @@
         <div class="card">
             <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <span><i class="fas fa-list-alt me-2"></i> Penyerahan OT Terkini</span>
-                <a href="manage_ot.html" style="font-size: 13px; color: var(--mulia-green); font-weight: 600;">Lihat Semua <i class="fas fa-arrow-right"></i></a>
+                <a href="ot_records.html" style="font-size: 13px; color: var(--mulia-green); font-weight: 600;">Lihat Semua <i class="fas fa-arrow-right"></i></a>
             </div>
             
             <div class="table-wrap">
