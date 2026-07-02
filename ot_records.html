@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rekod OT — Mulia OT System</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<div class="app-layout" id="app-layout">
+  <div class="main-content">
+    <div class="page-content">
+
+      <!-- Filter Bar -->
+      <div class="card mb-4">
+        <div class="card-body" style="padding:14px 20px">
+          <div class="filter-bar">
+            <div class="search-input-wrap" style="min-width:220px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="search-input" id="ot-search" placeholder="Cari nama, ID, jabatan...">
+            </div>
+            <select class="form-control" id="status-filter" style="width:auto;min-width:140px">
+              <option value="">Semua Status</option>
+              <option value="pending">Menunggu</option>
+              <option value="approved">Diluluskan</option>
+              <option value="rejected">Ditolak</option>
+            </select>
+            <select class="form-control" id="dept-filter" style="width:auto;min-width:150px">
+              <option value="">Semua Jabatan</option>
+              <option>Construction</option><option>Engineering</option>
+              <option>Admin</option><option>Operations</option><option>Finance</option>
+            </select>
+            <select class="form-control" id="month-filter" style="width:auto;min-width:150px" id="month-filter">
+              <option value="">Semua Bulan</option>
+            </select>
+            <button class="btn btn-outline" onclick="exportOT()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              CSV
+            </button>
+            <button class="btn btn-outline" onclick="ExportHelper.printTable('print-area','Rekod OT')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Stat Chips -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px" id="summary-chips"></div>
+
+      <!-- Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Rekod Lebih Masa (OT)</div>
+          <span class="text-sm text-muted" id="record-count">0 rekod</span>
+        </div>
+        <div class="table-wrapper" id="print-area">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" id="check-all" onchange="toggleAll(this.checked)">
+                </th>
+                <th>Pekerja</th>
+                <th>Tarikh OT</th>
+                <th>Jam</th>
+                <th>Jenis Hari</th>
+                <th>Sebab</th>
+                <th>Jumlah (RM)</th>
+                <th>Status</th>
+                <th>Diproses Oleh</th>
+                <th style="text-align:right">Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="ot-tbody"></tbody>
+          </table>
+        </div>
+        <!-- Bulk action bar -->
+        <div id="bulk-bar" style="display:none;padding:12px 20px;background:var(--info-bg);border-top:1px solid var(--border);display:none;align-items:center;gap:12px">
+          <span style="font-size:13px;color:var(--info)" id="bulk-count">0 dipilih</span>
+          <button class="btn btn-success btn-sm" onclick="bulkAction('approved')">Lulus Semua</button>
+          <button class="btn btn-danger btn-sm" onclick="bulkAction('rejected')">Tolak Semua</button>
+          <button class="btn btn-outline btn-sm" onclick="clearSelection()">Batal</button>
+        </div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div class="modal-title">Detail Rekod OT</div>
+      <button class="btn-icon btn-sm" onclick="UI.closeModal('modal-detail')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="UI.closeModal('modal-detail')">Tutup</button>
+      <button class="btn btn-success btn-sm" id="detail-approve-btn">Luluskan</button>
+      <button class="btn btn-danger btn-sm" id="detail-reject-btn">Tolak</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+  Auth.requireAuth();
+  LAYOUT.inject('Rekod OT', 'Mulia OT System › Rekod OT');
+
+  let allRecords = [];
+  let selectedIds = new Set();
+  let currentPage = 1;
+  const PAGE_SIZE = 12;
+
+  // Populate month filter
+  (function() {
+    const months = ['Jan','Feb','Mac','Apr','Mei','Jun','Jul','Ogos','Sep','Okt','Nov','Dis'];
+    const sel = document.getElementById('month-filter');
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const val = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      const opt = document.createElement('option');
+      opt.value = val; opt.textContent = months[d.getMonth()] + ' ' + d.getFullYear();
+      if (i === 0) opt.selected = true;
+      sel.appendChild(opt);
+    }
+  })();
+
+  function load() {
+    allRecords = DB.getOTRecords().sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    renderSummary();
+    renderTable();
+  }
+
+  function getFiltered() {
+    const q = document.getElementById('ot-search').value.toLowerCase();
+    const status = document.getElementById('status-filter').value;
+    const dept = document.getElementById('dept-filter').value;
+    const month = document.getElementById('month-filter').value;
+    return allRecords.filter(r => {
+      const matchQ = !q || [r.workerName, r.employeeId, r.department, r.reason].some(v => v && String(v).toLowerCase().includes(q));
+      const matchStatus = !status || r.status === status;
+      const matchDept = !dept || r.department === dept;
+      const matchMonth = !month || (r.otDate && r.otDate.startsWith(month));
+      return matchQ && matchStatus && matchDept && matchMonth;
+    });
+  }
+
+  function renderSummary() {
+    const filtered = getFiltered();
+    const pending = filtered.filter(r=>r.status==='pending').length;
+    const approved = filtered.filter(r=>r.status==='approved').length;
+    const totalHours = filtered.reduce((s,r)=>s+parseFloat(r.hours||0),0);
+    const totalAmount = filtered.filter(r=>r.status==='approved').reduce((s,r)=>s+parseFloat(r.hoursAmount||0),0);
+    document.getElementById('summary-chips').innerHTML = [
+      {label:'Menunggu', val:pending, color:'var(--warning)', bg:'var(--warning-bg)'},
+      {label:'Diluluskan', val:approved, color:'var(--success)', bg:'var(--success-bg)'},
+      {label:'Jumlah Jam', val:Math.round(totalHours*10)/10+' jam', color:'var(--info)', bg:'var(--info-bg)'},
+      {label:'Jumlah Bayaran', val:UI.formatCurrency(totalAmount), color:'var(--primary)', bg:'var(--info-bg)'},
+    ].map(c=>`<div style="padding:6px 14px;background:${c.bg};border-radius:20px;font-size:12px;font-weight:600;color:${c.color}">${c.label}: ${c.val}</div>`).join('');
+  }
+
+  function renderTable() {
+    const filtered = getFiltered();
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total/PAGE_SIZE));
+    currentPage = Math.min(currentPage, totalPages);
+    const page = filtered.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+
+    document.getElementById('record-count').textContent = total + ' rekod';
+
+    const tbody = document.getElementById('ot-tbody');
+    if (page.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><h4>Tiada Rekod</h4><p>Tiada rekod OT yang sepadan.</p></div></td></tr>';
+    } else {
+      tbody.innerHTML = page.map(r => `
+        <tr>
+          <td><input type="checkbox" class="row-check" data-id="${r.id}" ${selectedIds.has(r.id)?'checked':''} onchange="toggleRow('${r.id}',this.checked)"></td>
+          <td>
+            <div class="worker-cell">
+              <div class="worker-avatar" style="background:${UI.avatarColor(r.workerName)}">${UI.initials(r.workerName)}</div>
+              <div>
+                <div class="worker-name">${r.workerName}</div>
+                <div class="worker-id">${r.employeeId||''} · ${r.department||''}</div>
+              </div>
+            </div>
+          </td>
+          <td style="white-space:nowrap">${UI.formatDate(r.otDate)}</td>
+          <td><strong>${r.hours}</strong> jam</td>
+          <td><span style="font-size:11px;padding:3px 8px;background:var(--bg);border-radius:4px;color:var(--text-secondary)">${UI.formatDayType(r.dayType)}</span></td>
+          <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-secondary)" title="${r.reason||''}">${r.reason||'—'}</td>
+          <td style="font-weight:700;color:var(--primary)">${UI.formatCurrency(r.hoursAmount||0)}</td>
+          <td>${UI.statusBadge(r.status)}</td>
+          <td style="font-size:12px;color:var(--text-muted)">${r.processedBy||'—'}</td>
+          <td>
+            <div style="display:flex;justify-content:flex-end;gap:6px">
+              <button class="btn btn-outline btn-xs" onclick="viewDetail('${r.id}')">Lihat</button>
+              ${r.status==='pending'?`<button class="btn btn-success btn-xs" onclick="quickAction('${r.id}','approved')">✓</button><button class="btn btn-danger btn-xs" onclick="quickAction('${r.id}','rejected')">✕</button>`:''}
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    // Pagination
+    const pag = document.getElementById('pagination');
+    if (totalPages <= 1) { pag.innerHTML=''; return; }
+    let html = `<span class="page-info">${total} rekod</span>`;
+    html += `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
+    for (let i=1;i<=totalPages;i++) {
+      if(i===1||i===totalPages||Math.abs(i-currentPage)<=1) html+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      else if(Math.abs(i-currentPage)===2) html+='<span style="padding:0 4px;color:var(--text-muted)">…</span>';
+    }
+    html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>›</button>`;
+    pag.innerHTML = html;
+  }
+
+  function goPage(p) { currentPage=p; renderTable(); }
+
+  ['ot-search','status-filter','dept-filter','month-filter'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', ()=>{currentPage=1;renderSummary();renderTable();});
+    document.getElementById(id)?.addEventListener('change', ()=>{currentPage=1;renderSummary();renderTable();});
+  });
+
+  function toggleRow(id, checked) {
+    if (checked) selectedIds.add(id); else selectedIds.delete(id);
+    updateBulkBar();
+  }
+
+  function toggleAll(checked) {
+    document.querySelectorAll('.row-check').forEach(cb => {
+      cb.checked = checked;
+      const id = cb.dataset.id;
+      if (checked) selectedIds.add(id); else selectedIds.delete(id);
+    });
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    const bar = document.getElementById('bulk-bar');
+    if (selectedIds.size > 0) { bar.style.display='flex'; document.getElementById('bulk-count').textContent=selectedIds.size+' dipilih'; }
+    else bar.style.display='none';
+  }
+
+  function clearSelection() { selectedIds.clear(); document.querySelectorAll('.row-check').forEach(cb=>cb.checked=false); document.getElementById('check-all').checked=false; updateBulkBar(); }
+
+  function bulkAction(status) {
+    selectedIds.forEach(id => DB.updateOTStatus(id, status));
+    UI.toast((status==='approved'?selectedIds.size+' rekod berjaya diluluskan.':selectedIds.size+' rekod berjaya ditolak.'), status==='approved'?'success':'info');
+    clearSelection(); load();
+  }
+
+  function quickAction(id, status) {
+    DB.updateOTStatus(id, status);
+    UI.toast(status==='approved'?'OT diluluskan.':'OT ditolak.', status==='approved'?'success':'info');
+    load();
+  }
+
+  function viewDetail(id) {
+    const r = allRecords.find(x=>x.id===id); if(!r) return;
+    document.getElementById('modal-detail-body').innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)">
+        <div class="worker-avatar" style="width:48px;height:48px;font-size:17px;border-radius:10px;background:${UI.avatarColor(r.workerName)}">${UI.initials(r.workerName)}</div>
+        <div><div style="font-size:16px;font-weight:700">${r.workerName}</div><div style="font-size:12px;color:var(--text-muted)">${r.employeeId||''} · ${r.department||''}</div></div>
+        <div style="margin-left:auto">${UI.statusBadge(r.status)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+        ${[['No. Rekod',r.id],['Tarikh OT',UI.formatDate(r.otDate)],['Jumlah Jam',r.hours+' jam'],['Jenis Hari',UI.formatDayType(r.dayType)],
+           ['Bayaran OT',UI.formatCurrency(r.hoursAmount||0)],['Tarikh Hantar',UI.formatDateTime(r.submittedAt)]
+        ].map(([l,v])=>`<div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-bottom:2px">${l}</div><div style="font-size:13px;font-weight:600;color:var(--text-primary)">${v}</div></div>`).join('')}
+      </div>
+      <div style="margin-bottom:12px"><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-bottom:4px">Sebab OT</div><div style="font-size:13px;color:var(--text-secondary);background:var(--bg);padding:10px 12px;border-radius:var(--radius-sm)">${r.reason||'—'}</div></div>
+      ${r.statusRemarks?`<div><div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;font-weight:600;margin-bottom:4px">Catatan</div><div style="font-size:13px;color:var(--text-secondary)">${r.statusRemarks}</div></div>`:''}
+      ${r.processedBy?`<div style="margin-top:10px;font-size:12px;color:var(--text-muted)">Diproses oleh: <strong>${r.processedBy}</strong> pada ${UI.formatDateTime(r.processedAt)}</div>`:''}`;
+
+    const apBtn = document.getElementById('detail-approve-btn');
+    const rejBtn = document.getElementById('detail-reject-btn');
+    if (r.status !== 'pending') { apBtn.style.display='none'; rejBtn.style.display='none'; }
+    else {
+      apBtn.style.display=''; rejBtn.style.display='';
+      apBtn.onclick = () => { DB.updateOTStatus(id,'approved'); UI.closeModal('modal-detail'); UI.toast('OT diluluskan.','success'); load(); };
+      rejBtn.onclick = () => { const rem=prompt('Sebab penolakan (pilihan):'); DB.updateOTStatus(id,'rejected',rem||''); UI.closeModal('modal-detail'); UI.toast('OT ditolak.','info'); load(); };
+    }
+    UI.openModal('modal-detail');
+  }
+
+  function exportOT() {
+    const filtered = getFiltered();
+    const headers = ['ID','Nama Pekerja','No Pekerja','Jabatan','Tarikh OT','Jam','Jenis Hari','Sebab','Bayaran OT','Status','Diproses Oleh'];
+    const rows = filtered.map(r => [r.id,r.workerName,r.employeeId,r.department,r.otDate,r.hours,UI.formatDayType(r.dayType),r.reason,r.hoursAmount,r.status,r.processedBy]);
+    ExportHelper.toCSV(headers, rows, 'Mulia_OT_Rekod_' + new Date().toISOString().split('T')[0] + '.csv');
+    UI.toast('Fail CSV berjaya dieksport.','success');
+  }
+
+  load();
+</script>
+</body>
+</html>
