@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<div class="topbar">
+    <div class="topbar-left">
+        <button class="d-md-none hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div>
+            <div class="topbar-title"><?= htmlspecialchars($page_title ?? 'Dashboard') ?></div>
+            <div class="topbar-breadcrumb">
+                <span>BMS</span>
+                <i class="fas fa-chevron-right" style="font-size:.55rem"></i>
+                <span><?= htmlspecialchars($page_title ?? 'Dashboard') ?></span>
+            </div>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <div class="topbar-date d-none d-md-flex">
+            <i class="far fa-calendar-alt"></i>
+            <span id="liveDate"><?= date('l, d M Y') ?></span>
+        </div>
+        <div class="topbar-badge clock-badge">
+            <i class="far fa-clock" style="color:var(--gold)"></i>
+            <span id="liveClock" style="font-family:'Inter',monospace;letter-spacing:.05em">--:--:--</span>
+        </div>
+        <div class="topbar-badge d-none d-lg-flex">
+            <span class="online-dot"></span> Online
+        </div>
+    </div>
+</div>
+
+</html>

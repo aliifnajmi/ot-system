@@ -1,0 +1,36 @@
+</div><!-- /#main-content -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="/ot-system/assets/js/dashboard.js"></script>
+
+<!-- Dify Chatbot Widget -->
+<script>
+  window.difyChatbotConfig = {
+    token: 'YOUR_DIFY_TOKEN_HERE',  // copy dari Dify dashboard
+    baseUrl: 'https://api.dify.ai', // atau self-hosted URL anda
+  }
+</script>
+<script
+  src="https://udify.app/embed.min.js"
+  id="YOUR_DIFY_TOKEN_HERE"
+  defer>
+</script>
+
+<!-- Custom style supaya match tema Navy BMS -->
+<style>
+  #dify-chatbot-bubble-button {
+    background-color: #0A192F !important;
+    bottom: 2rem !important;
+    right: 2rem !important;
+  }
+  #dify-chatbot-bubble-window {
+    bottom: 5rem !important;
+    right: 2rem !important;
+    width: 380px !important;
+    height: 550px !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2) !important;
+  }
+</style>
+</body>
+</html>
