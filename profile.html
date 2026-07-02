@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil — Mulia OT System</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .profile-hero {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px 28px 60px;
+      position: relative;
+      margin-bottom: 52px;
+    }
+    .profile-hero-content { display:flex; align-items:center; gap:16px; }
+    .profile-big-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: var(--accent); display: flex; align-items: center;
+      justify-content: center; font-size: 26px; font-weight: 800;
+      color: #fff; border: 4px solid rgba(255,255,255,0.3);
+      position: absolute; bottom: -36px; left: 28px;
+      box-shadow: var(--shadow-md);
+    }
+    .profile-hero-text { padding-left: 88px; }
+    .profile-hero-name { color:#fff; font-size:20px; font-weight:800; }
+    .profile-hero-sub { color:rgba(255,255,255,0.65); font-size:13px; }
+    .setting-section { margin-bottom:24px; }
+    .setting-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 20px; border-bottom:1px solid var(--border);
+      gap:12px;
+    }
+    .setting-row:last-child { border-bottom:none; }
+    .setting-label { font-size:13px; font-weight:600; color:var(--text-primary); }
+    .setting-desc { font-size:12px; color:var(--text-muted); margin-top:2px; }
+    .toggle-switch {
+      width:42px; height:24px; background:var(--border); border-radius:12px;
+      position:relative; cursor:pointer; transition:background 0.2s; border:none;
+      flex-shrink:0;
+    }
+    .toggle-switch.on { background:var(--primary); }
+    .toggle-switch::after {
+      content:''; position:absolute; width:18px; height:18px;
+      background:#fff; border-radius:50%; top:3px; left:3px;
+      transition:transform 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.on::after { transform:translateX(18px); }
+    .data-stat { text-align:center; padding:16px; }
+    .data-stat-val { font-size:22px; font-weight:800; color:var(--primary); }
+    .data-stat-label { font-size:12px; color:var(--text-muted); }
+    .sheets-status { display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--warning-bg); border-radius:var(--radius-sm); color:var(--warning); font-size:13px; }
+    .sheets-status.connected { background:var(--success-bg); color:var(--success); }
+  </style>
+</head>
+<body>
+<div class="app-layout" id="app-layout">
+  <div class="main-content">
+    <div class="page-content">
+
+      <!-- Profile Hero -->
+      <div class="profile-hero">
+        <div class="profile-hero-content">
+          <div class="profile-hero-text">
+            <div class="profile-hero-name" id="hero-name">—</div>
+            <div class="profile-hero-sub" id="hero-sub">Admin / HR · Mulia Properties Development Sdn Bhd</div>
+          </div>
+        </div>
+        <div class="profile-big-avatar" id="hero-avatar">AU</div>
+      </div>
+
+      <div class="grid-2" style="align-items:start">
+
+        <!-- Left: Profile + Password -->
+        <div>
+          <!-- Profile Info -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <div class="card-title">Maklumat Profil</div>
+              <button class="btn btn-outline btn-sm" id="edit-profile-btn" onclick="toggleEditProfile()">Edit</button>
+            </div>
+            <div class="card-body" id="profile-view">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                <div>
+                  <div class="form-label" style="margin-bottom:2px">Nama Penuh</div>
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary)" id="view-name">—</div>
+                </div>
+                <div>
+                  <div class="form-label" style="margin-bottom:2px">Nama Pengguna</div>
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary)" id="view-username">—</div>
+                </div>
+                <div>
+                  <div class="form-label" style="margin-bottom:2px">Emel</div>
+                  <div style="font-size:14px;font-weight:600;color:var(--text-primary)" id="view-email">—</div>
+                </div>
+                <div>
+                  <div class="form-label" style="margin-bottom:2px">Peranan</div>
+                  <div><span class="badge badge-active">Admin / HR</span></div>
+                </div>
+                <div>
+                  <div class="form-label" style="margin-bottom:2px">Log Masuk Terakhir</div>
+                  <div style="font-size:13px;color:var(--text-secondary)" id="view-login">—</div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body" id="profile-edit" style="display:none">
+              <div class="form-group">
+                <label class="form-label">Nama Penuh</label>
+                <input type="text" id="edit-name" class="form-control">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Emel</label>
+                <input type="email" id="edit-email" class="form-control">
+              </div>
+              <div style="display:flex;gap:10px;justify-content:flex-end">
+                <button class="btn btn-outline btn-sm" onclick="cancelEditProfile()">Batal</button>
+                <button class="btn btn-primary btn-sm" onclick="saveProfile()">Simpan</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Change Password -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <div class="card-title">Tukar Kata Laluan</div>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label class="form-label">Kata Laluan Semasa</label>
+                <input type="password" id="pw-current" class="form-control" placeholder="••••••••">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kata Laluan Baru</label>
+                <input type="password" id="pw-new" class="form-control" placeholder="Min. 8 aksara">
+              </div>
+              <div class="form-group mb-0">
+                <label class="form-label">Ulang Kata Laluan Baru</label>
+                <input type="password" id="pw-confirm" class="form-control" placeholder="••••••••">
+              </div>
+              <div id="pw-error" class="form-error mt-2" style="display:none"></div>
+              <button class="btn btn-primary mt-3 w-full" style="justify-content:center" onclick="changePassword()">Tukar Kata Laluan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Settings + Data -->
+        <div>
+          <!-- App Settings -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <div class="card-title">Tetapan Aplikasi</div>
+            </div>
+            <div class="setting-section">
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Mod Gelap</div>
+                  <div class="setting-desc">Tukar antara tema terang dan gelap</div>
+                </div>
+                <button class="toggle-switch" id="toggle-dark" onclick="toggleDark()"></button>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Bahasa</div>
+                  <div class="setting-desc">Bahasa paparan sistem</div>
+                </div>
+                <select class="form-control" style="width:auto;min-width:130px">
+                  <option>Bahasa Malaysia</option>
+                  <option>English</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Kadar OT Hari Biasa</div>
+                  <div class="setting-desc">Pengganda kadar sejam (default 1.5x)</div>
+                </div>
+                <select class="form-control" style="width:auto;min-width:100px" id="rate-weekday">
+                  <option value="1.5" selected>1.5x</option>
+                  <option value="2.0">2.0x</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Kadar OT Hari Rehat</div>
+                  <div class="setting-desc">Pengganda kadar sejam (default 2.0x)</div>
+                </div>
+                <select class="form-control" style="width:auto;min-width:100px" id="rate-rest">
+                  <option value="2.0" selected>2.0x</option>
+                  <option value="2.5">2.5x</option>
+                </select>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <div class="setting-label">Kadar OT Cuti Umum</div>
+                  <div class="setting-desc">Pengganda kadar sejam (default 3.0x)</div>
+                </div>
+                <select class="form-control" style="width:auto;min-width:100px" id="rate-ph">
+                  <option value="3.0" selected>3.0x</option>
+                  <option value="3.5">3.5x</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Google Sheets Config -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <div class="card-title">Konfigurasi Google Sheets</div>
+              <a href="https://docs.google.com/spreadsheets" target="_blank" class="btn btn-outline btn-sm">Buka Sheets</a>
+            </div>
+            <div class="card-body">
+              <div class="sheets-status mb-4" id="sheets-status">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Google Sheets belum dikonfigurasi. Data disimpan secara tempatan.
+              </div>
+              <div class="form-group">
+                <label class="form-label">Spreadsheet ID</label>
+                <input type="text" id="sheets-id" class="form-control" placeholder="Contoh: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
+                <div class="form-hint">Dapatkan dari URL Google Sheets anda.</div>
+              </div>
+              <div class="form-group mb-0">
+                <label class="form-label">API Key</label>
+                <input type="password" id="sheets-api" class="form-control" placeholder="AIzaSy...">
+                <div class="form-hint">Dapatkan dari Google Cloud Console › API & Services.</div>
+              </div>
+              <button class="btn btn-primary mt-3" onclick="saveSheetsCfg()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+                Simpan Konfigurasi
+              </button>
+            </div>
+          </div>
+
+          <!-- Data Summary -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <div class="card-title">Ringkasan Data</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--border)" id="data-summary"></div>
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="card" style="border-color:var(--danger)">
+            <div class="card-header" style="border-color:var(--danger)">
+              <div class="card-title" style="color:var(--danger)">Zon Bahaya</div>
+            </div>
+            <div class="card-body">
+              <p class="text-sm text-muted mb-4">Tindakan berikut <strong>tidak boleh dibatalkan</strong>. Sila pastikan anda telah membuat sandaran data.</p>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <button class="btn btn-outline btn-sm" style="border-color:var(--warning);color:var(--warning);justify-content:flex-start" onclick="resetSampleData()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                  Jana Semula Data Demo
+                </button>
+                <button class="btn btn-danger btn-sm" style="justify-content:flex-start" onclick="clearAllData()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                  Padam Semua Data
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+  const session = Auth.requireAuth();
+  LAYOUT.inject('Profil & Tetapan', 'Mulia OT System › Profil');
+
+  function loadProfile() {
+    const s = Auth.getSession();
+    if (!s) return;
+    document.getElementById('hero-name').textContent = s.name;
+    document.getElementById('hero-sub').textContent = 'Admin / HR · Mulia Properties Development Sdn Bhd';
+    const av = document.getElementById('hero-avatar');
+    const p = s.name.split(' ');
+    av.textContent = (p.length >= 2 ? p[0][0] + p[p.length-1][0] : s.name.substring(0,2)).toUpperCase();
+
+    document.getElementById('view-name').textContent = s.name;
+    document.getElementById('view-username').textContent = s.username;
+    document.getElementById('view-email').textContent = s.email || '—';
+    document.getElementById('view-login').textContent = UI.formatDateTime(s.loginAt);
+
+    document.getElementById('edit-name').value = s.name;
+    document.getElementById('edit-email').value = s.email || '';
+
+    // Data summary
+    const workers = DB.getWorkers();
+    const records = DB.getOTRecords();
+    const logs = AuditLog.getAll();
+    document.getElementById('data-summary').innerHTML = [
+      { label:'Pekerja', val: workers.length },
+      { label:'Rekod OT', val: records.length },
+      { label:'Log Audit', val: logs.length },
+    ].map(d => `<div class="data-stat" style="border-right:1px solid var(--border);padding:18px 12px">
+      <div class="data-stat-val">${d.val}</div>
+      <div class="data-stat-label">${d.label}</div>
+    </div>`).join('').replace(/border-right:1px solid var\(--border\)(?=[^}]*<\/div>\s*$)/,'');
+
+    // Dark mode toggle
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const toggleBtn = document.getElementById('toggle-dark');
+    if (isDark) toggleBtn.classList.add('on');
+
+    // Sheets config
+    const sheetsId = localStorage.getItem('mulia_sheets_id') || '';
+    const sheetsApi = localStorage.getItem('mulia_sheets_api') || '';
+    document.getElementById('sheets-id').value = sheetsId;
+    document.getElementById('sheets-api').value = sheetsApi ? '••••••••' : '';
+    if (sheetsId && sheetsApi) {
+      const st = document.getElementById('sheets-status');
+      st.className = 'sheets-status connected mb-4';
+      st.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Google Sheets berjaya dikonfigurasi.';
+    }
+  }
+
+  function toggleDark() {
+    const btn = document.getElementById('toggle-dark');
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('mulia_theme', next);
+    btn.classList.toggle('on', next === 'dark');
+  }
+
+  function toggleEditProfile() {
+    document.getElementById('profile-view').style.display = 'none';
+    document.getElementById('profile-edit').style.display = 'block';
+    document.getElementById('edit-profile-btn').style.display = 'none';
+  }
+
+  function cancelEditProfile() {
+    document.getElementById('profile-view').style.display = 'block';
+    document.getElementById('profile-edit').style.display = 'none';
+    document.getElementById('edit-profile-btn').style.display = '';
+  }
+
+  function saveProfile() {
+    const name = document.getElementById('edit-name').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    if (!name) { UI.toast('Nama tidak boleh kosong.', 'error'); return; }
+
+    const s = Auth.getSession();
+    const updated = { ...s, name, email };
+    localStorage.setItem(Auth.SESSION_KEY, JSON.stringify(updated));
+
+    // Update in users list
+    const users = Auth.getUsers();
+    const idx = users.findIndex(u => u.id === s.userId);
+    if (idx !== -1) { users[idx].name = name; users[idx].email = email; localStorage.setItem(Auth.USERS_KEY, JSON.stringify(users)); }
+
+    AuditLog.add('UPDATE_PROFILE', 'Profil dikemaskini: ' + name);
+    UI.toast('Profil berjaya dikemaskini.', 'success');
+    cancelEditProfile();
+    loadProfile();
+    UI.renderUserInfo();
+  }
+
+  function changePassword() {
+    const current = document.getElementById('pw-current').value;
+    const newPw = document.getElementById('pw-new').value;
+    const confirm = document.getElementById('pw-confirm').value;
+    const errEl = document.getElementById('pw-error');
+    errEl.style.display = 'none';
+
+    const s = Auth.getSession();
+    const users = Auth.getUsers();
+    const user = users.find(u => u.id === s.userId);
+
+    if (!user || user.password !== btoa(current)) {
+      errEl.textContent = 'Kata laluan semasa tidak tepat.'; errEl.style.display = 'block'; return;
+    }
+    if (newPw.length < 8) {
+      errEl.textContent = 'Kata laluan baru mestilah sekurang-kurangnya 8 aksara.'; errEl.style.display = 'block'; return;
+    }
+    if (newPw !== confirm) {
+      errEl.textContent = 'Pengesahan kata laluan tidak sepadan.'; errEl.style.display = 'block'; return;
+    }
+
+    const idx = users.findIndex(u => u.id === s.userId);
+    users[idx].password = btoa(newPw);
+    localStorage.setItem(Auth.USERS_KEY, JSON.stringify(users));
+    AuditLog.add('CHANGE_PASSWORD', 'Kata laluan ditukar');
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-confirm').value = '';
+    UI.toast('Kata laluan berjaya ditukar.', 'success');
+  }
+
+  function saveSheetsCfg() {
+    const id = document.getElementById('sheets-id').value.trim();
+    const api = document.getElementById('sheets-api').value.trim();
+    if (!id || !api || api === '••••••••') { UI.toast('Sila masukkan Spreadsheet ID dan API Key yang sah.', 'error'); return; }
+    localStorage.setItem('mulia_sheets_id', id);
+    localStorage.setItem('mulia_sheets_api', api);
+    AuditLog.add('SAVE_SHEETS_CONFIG', 'Konfigurasi Google Sheets disimpan');
+    UI.toast('Konfigurasi Google Sheets berjaya disimpan.', 'success');
+    loadProfile();
+  }
+
+  function resetSampleData() {
+    const overlay = document.getElementById('confirm-modal');
+    const msg = document.getElementById('confirm-message');
+    if (msg) msg.textContent = 'Jana semula data demo? Data semasa akan dipadam dan digantikan dengan data contoh baharu.';
+    const ok = document.getElementById('confirm-ok');
+    const newOk = ok.cloneNode(true);
+    ok.parentNode.replaceChild(newOk, ok);
+    newOk.addEventListener('click', () => {
+      localStorage.removeItem(DB.KEYS.WORKERS);
+      localStorage.removeItem(DB.KEYS.OT_RECORDS);
+      DB.seedSampleData();
+      UI.closeModal('confirm-modal');
+      UI.toast('Data demo berjaya dijana semula.', 'success');
+      loadProfile();
+    });
+    document.getElementById('confirm-cancel').onclick = () => UI.closeModal('confirm-modal');
+    overlay.classList.add('open'); document.body.style.overflow = 'hidden';
+  }
+
+  function clearAllData() {
+    const overlay = document.getElementById('confirm-modal');
+    const msg = document.getElementById('confirm-message');
+    if (msg) msg.textContent = 'AMARAN: Ini akan memadam SEMUA pekerja, rekod OT, dan log. Tindakan ini TIDAK BOLEH dibatalkan!';
+    const ok = document.getElementById('confirm-ok');
+    const newOk = ok.cloneNode(true);
+    ok.parentNode.replaceChild(newOk, ok);
+    newOk.addEventListener('click', () => {
+      localStorage.removeItem(DB.KEYS.WORKERS);
+      localStorage.removeItem(DB.KEYS.OT_RECORDS);
+      localStorage.removeItem('mulia_audit_log');
+      UI.closeModal('confirm-modal');
+      UI.toast('Semua data berjaya dipadam.', 'success');
+      loadProfile();
+    });
+    document.getElementById('confirm-cancel').onclick = () => UI.closeModal('confirm-modal');
+    overlay.classList.add('open'); document.body.style.overflow = 'hidden';
+  }
+
+  loadProfile();
+</script>
+</body>
+</html>

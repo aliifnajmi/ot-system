@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Audit — Mulia OT System</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .log-action-badge {
+      display:inline-block; padding:2px 9px; border-radius:4px;
+      font-size:10px; font-weight:700; letter-spacing:0.4px; font-family:monospace;
+    }
+    .action-LOGIN      { background:#e4f0f8; color:#1a5f8c; }
+    .action-LOGOUT     { background:#f0f0f0; color:#555; }
+    .action-ADD_WORKER { background:#e8f5ee; color:#2d7a4f; }
+    .action-UPDATE_WORKER { background:#fef3dc; color:#a86a0a; }
+    .action-DELETE_WORKER { background:#fdeaea; color:#b53030; }
+    .action-SUBMIT_OT  { background:#e4f0f8; color:#1a5f8c; }
+    .action-UPDATE_OT_STATUS { background:#fef3dc; color:#a86a0a; }
+    .action-DEFAULT    { background:var(--bg); color:var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="app-layout" id="app-layout">
+  <div class="main-content">
+    <div class="page-content">
+
+      <!-- Filter -->
+      <div class="card mb-4">
+        <div class="card-body" style="padding:14px 20px">
+          <div class="filter-bar">
+            <div class="search-input-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" class="search-input" id="log-search" placeholder="Cari tindakan, pengguna, penerangan...">
+            </div>
+            <select class="form-control" id="action-filter" style="width:auto;min-width:160px">
+              <option value="">Semua Tindakan</option>
+              <option value="LOGIN">Login</option>
+              <option value="LOGOUT">Logout</option>
+              <option value="ADD_WORKER">Tambah Pekerja</option>
+              <option value="UPDATE_WORKER">Kemaskini Pekerja</option>
+              <option value="DELETE_WORKER">Padam Pekerja</option>
+              <option value="SUBMIT_OT">Hantar OT</option>
+              <option value="UPDATE_OT_STATUS">Kemaskini Status OT</option>
+            </select>
+            <input type="date" id="log-date" class="form-control" style="width:auto;min-width:150px">
+            <button class="btn btn-outline" onclick="clearLogs()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              Padam Log
+            </button>
+            <button class="btn btn-outline" onclick="exportLogs()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px" id="log-stats"></div>
+
+      <!-- Log Table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Log Aktiviti Sistem</div>
+          <span class="text-sm text-muted" id="log-count">0 entri</span>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:160px">Masa</th>
+                <th style="width:160px">Tindakan</th>
+                <th>Penerangan</th>
+                <th style="width:140px">Pengguna</th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="log-pagination"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/layout.js"></script>
+<script>
+  Auth.requireAuth();
+  LAYOUT.inject('Log Audit', 'Mulia OT System › Log Audit');
+
+  let allLogs = [];
+  let currentPage = 1;
+  const PAGE_SIZE = 20;
+
+  function load() {
+    allLogs = AuditLog.getAll();
+    renderStats();
+    renderTable();
+  }
+
+  function getFiltered() {
+    const q = document.getElementById('log-search').value.toLowerCase();
+    const action = document.getElementById('action-filter').value;
+    const date = document.getElementById('log-date').value;
+    return allLogs.filter(l => {
+      const matchQ = !q || [l.action, l.description, l.userName].some(v => v && v.toLowerCase().includes(q));
+      const matchAction = !action || l.action === action;
+      const matchDate = !date || (l.timestamp && l.timestamp.startsWith(date));
+      return matchQ && matchAction && matchDate;
+    });
+  }
+
+  function renderStats() {
+    const today = new Date().toISOString().split('T')[0];
+    const todayLogs = allLogs.filter(l => l.timestamp && l.timestamp.startsWith(today));
+    const logins = allLogs.filter(l => l.action === 'LOGIN').length;
+    const otActions = allLogs.filter(l => ['SUBMIT_OT','UPDATE_OT_STATUS'].includes(l.action)).length;
+    const workerActions = allLogs.filter(l => ['ADD_WORKER','UPDATE_WORKER','DELETE_WORKER'].includes(l.action)).length;
+
+    document.getElementById('log-stats').innerHTML = [
+      { label:'Jumlah Log', val:allLogs.length },
+      { label:'Log Hari Ini', val:todayLogs.length },
+      { label:'Aktiviti Login', val:logins },
+      { label:'Aktiviti OT', val:otActions },
+    ].map(s => `
+      <div class="stat-card" style="padding:14px 16px">
+        <div class="stat-info">
+          <div class="stat-value">${s.val}</div>
+          <div class="stat-label">${s.label}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderTable() {
+    const filtered = getFiltered();
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    currentPage = Math.min(currentPage, totalPages);
+    const page = filtered.slice((currentPage-1)*PAGE_SIZE, currentPage*PAGE_SIZE);
+
+    document.getElementById('log-count').textContent = total + ' entri';
+
+    const tbody = document.getElementById('log-tbody');
+    if (page.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state" style="padding:32px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><h4>Tiada Log</h4><p>Tiada aktiviti yang sepadan.</p></div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = page.map(l => {
+      const actionClass = 'action-' + (l.action || 'DEFAULT');
+      const actionLabel = {
+        LOGIN:'Login', LOGOUT:'Logout',
+        ADD_WORKER:'Tambah Pekerja', UPDATE_WORKER:'Kemaskini Pekerja', DELETE_WORKER:'Padam Pekerja',
+        SUBMIT_OT:'Hantar OT', UPDATE_OT_STATUS:'Kemaskini Status OT'
+      }[l.action] || l.action;
+
+      return `<tr>
+        <td style="white-space:nowrap;font-size:12px;color:var(--text-muted)">${UI.formatDateTime(l.timestamp)}</td>
+        <td><span class="log-action-badge ${actionClass}">${actionLabel}</span></td>
+        <td style="font-size:13px;color:var(--text-secondary)">${l.description || '—'}</td>
+        <td style="font-size:12px;font-weight:600;color:var(--text-primary)">${l.userName || 'System'}</td>
+      </tr>`;
+    }).join('');
+
+    // Pagination
+    const pag = document.getElementById('log-pagination');
+    if (totalPages <= 1) { pag.innerHTML = ''; return; }
+    let html = `<span class="page-info">${total} entri</span>`;
+    html += `<button class="page-btn" onclick="goPage(${currentPage-1})" ${currentPage<=1?'disabled':''}>‹</button>`;
+    for (let i = 1; i <= totalPages; i++) {
+      if (i===1||i===totalPages||Math.abs(i-currentPage)<=1)
+        html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+      else if (Math.abs(i-currentPage)===2)
+        html += '<span style="padding:0 4px;color:var(--text-muted)">…</span>';
+    }
+    html += `<button class="page-btn" onclick="goPage(${currentPage+1})" ${currentPage>=totalPages?'disabled':''}>›</button>`;
+    pag.innerHTML = html;
+  }
+
+  function goPage(p) { currentPage = p; renderTable(); }
+
+  ['log-search','action-filter','log-date'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', () => { currentPage=1; renderTable(); });
+    document.getElementById(id)?.addEventListener('change', () => { currentPage=1; renderTable(); });
+  });
+
+  function clearLogs() {
+    const overlay = document.getElementById('confirm-modal');
+    const msg = document.getElementById('confirm-message');
+    if (msg) msg.textContent = 'Adakah anda pasti untuk memadam SEMUA log audit? Tindakan ini tidak boleh dibatalkan.';
+    const ok = document.getElementById('confirm-ok');
+    const newOk = ok.cloneNode(true);
+    ok.parentNode.replaceChild(newOk, ok);
+    newOk.addEventListener('click', () => {
+      localStorage.removeItem('mulia_audit_log');
+      AuditLog.add('CLEAR_LOG', 'Semua log audit telah dipadam');
+      UI.closeModal('confirm-modal');
+      UI.toast('Log audit berjaya dipadam.', 'success');
+      load();
+    });
+    document.getElementById('confirm-cancel').onclick = () => UI.closeModal('confirm-modal');
+    overlay.classList.add('open'); document.body.style.overflow = 'hidden';
+  }
+
+  function exportLogs() {
+    const filtered = getFiltered();
+    const headers = ['Masa','Tindakan','Penerangan','Pengguna'];
+    const rows = filtered.map(l => [UI.formatDateTime(l.timestamp), l.action, l.description, l.userName]);
+    ExportHelper.toCSV(headers, rows, 'Mulia_AuditLog_' + new Date().toISOString().split('T')[0] + '.csv');
+    UI.toast('Log audit berjaya dieksport.', 'success');
+  }
+
+  load();
+</script>
+</body>
+</html>
