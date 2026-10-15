@@ -31,7 +31,7 @@
 const $=id=>document.getElementById(id);
 function show(t,type){$('message').textContent=t;$('message').className='message show '+type}
 const rawCfg=window.MULIA_SUPABASE_CONFIG||{};
-const cfg={...rawCfg,url:String(rawCfg.url||'').trim().replace(/\\/+$/,'').replace(/\\/rest\\/v1$/i,'')};
+const cfg={...rawCfg,url:String(rawCfg.url||'').trim().replace(/\/+$/,'').replace(/\/rest\/v1$/i,'')};
 const configured=cfg.url&&cfg.publishableKey&&!cfg.publishableKey.includes('YOUR_SUPABASE');
 if(!configured){show('Supabase URL is configured, but the publishable key is still missing. Add the key in assets/js/supabase-config.js before sign-in.','info');$('submit').disabled=true}
 else{
